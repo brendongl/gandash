@@ -2669,6 +2669,3 @@ class Dash {
 
 // Initialize
 const app = new Dash();
-
-// Initialize
-const app = new Dash();
