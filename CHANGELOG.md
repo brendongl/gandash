@@ -2,6 +2,36 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.2.2] - 2026-02-03
+
+### Added
+- **Drag-and-Drop Kanban**: Full drag-and-drop functionality for kanban cards
+  - Drag cards between To Do, In Progress, and Complete columns
+  - Visual feedback during drag (opacity change, cursor)
+  - Drop zones highlight when hovering
+  - Task status automatically updates when dropped in new column
+  - Smooth animations for better UX
+
+### Fixed
+- **Upcoming Dropdown**: Fixed "Upcoming" dropdown in sidebar not expanding
+  - Clicking "Upcoming" now properly toggles the dropdown
+  - Projects list properly displays under Upcoming section
+  - Event handling improved for dropdown toggle
+- **Filter Dropdowns**: Fixed empty filter dropdowns
+  - Projects, Labels, and Assignees now populate correctly
+  - Data loaded properly before rendering filters
+- **Kanban Layout**: Fixed wasted space with columns compressed on left
+  - Kanban board now uses full available width
+  - Columns properly distribute across screen
+  - Removed min-width constraint that was causing compression
+  - Better responsive behavior
+
+### Changed
+- All kanban cards now have `draggable="true"` attribute and `.kanban-card` class
+- Improved drag-and-drop visual feedback with CSS transitions
+
+---
+
 ## [0.2.1] - 2026-02-03
 
 ### Added

@@ -877,35 +877,134 @@ class Dash {
 
         kanbanContainer.innerHTML = `
             <div class="kanban-board">
-                <div class="kanban-column">
+                <div class="kanban-column" data-status="todo">
                     <div class="kanban-header">
                         <h3>To Do</h3>
                         <span class="kanban-count">${todoTasks.length}</span>
                     </div>
-                    <div class="kanban-tasks">
+                    <div class="kanban-tasks" data-status="todo">
                         ${todoTasks.map(task => this.renderTaskItem(task)).join('')}
                     </div>
                 </div>
-                <div class="kanban-column">
+                <div class="kanban-column" data-status="in-progress">
                     <div class="kanban-header">
                         <h3>In Progress</h3>
                         <span class="kanban-count">${inProgressTasks.length}</span>
                     </div>
-                    <div class="kanban-tasks">
+                    <div class="kanban-tasks" data-status="in-progress">
                         ${inProgressTasks.map(task => this.renderTaskItem(task)).join('')}
                     </div>
                 </div>
-                <div class="kanban-column">
+                <div class="kanban-column" data-status="completed">
                     <div class="kanban-header">
                         <h3>Complete</h3>
                         <span class="kanban-count">${completedTasks.length}</span>
                     </div>
-                    <div class="kanban-tasks">
+                    <div class="kanban-tasks" data-status="completed">
                         ${completedTasks.map(task => this.renderTaskItem(task)).join('')}
                     </div>
                 </div>
             </div>
         `;
+        
+        // Setup drag and drop
+        this.setupDragAndDrop();
+    }
+
+    setupDragAndDrop() {
+        const cards = document.querySelectorAll('.kanban-card');
+        const columns = document.querySelectorAll('.kanban-tasks');
+        
+        // Setup draggable cards
+        cards.forEach(card => {
+            card.addEventListener('dragstart', (e) => {
+                card.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', card.innerHTML);
+            });
+            
+            card.addEventListener('dragend', (e) => {
+                card.classList.remove('dragging');
+            });
+        });
+        
+        // Setup drop zones
+        columns.forEach(column => {
+            column.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                
+                const draggingCard = document.querySelector('.dragging');
+                const afterElement = this.getDragAfterElement(column, e.clientY);
+                
+                if (afterElement == null) {
+                    column.appendChild(draggingCard);
+                } else {
+                    column.insertBefore(draggingCard, afterElement);
+                }
+            });
+            
+            column.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const draggingCard = document.querySelector('.dragging');
+                if (!draggingCard) return;
+                
+                const newStatus = column.dataset.status;
+                const taskId = parseInt(draggingCard.dataset.id);
+                
+                // Update task status
+                this.updateTaskStatus(taskId, newStatus);
+            });
+            
+            column.addEventListener('dragenter', (e) => {
+                e.preventDefault();
+                column.classList.add('drag-over');
+            });
+            
+            column.addEventListener('dragleave', (e) => {
+                if (e.target === column) {
+                    column.classList.remove('drag-over');
+                }
+            });
+        });
+    }
+    
+    getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.kanban-card:not(.dragging)')];
+        
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+    
+    async updateTaskStatus(taskId, newStatus) {
+        const task = this.tasks.find(t => t.id === taskId);
+        if (!task) return;
+        
+        // Update local state
+        task.status = newStatus;
+        
+        // Update in database
+        try {
+            await this.api(`/tasks/${taskId}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status: newStatus })
+            });
+            
+            this.showToast('Task status updated', 'success');
+        } catch (error) {
+            console.error('Failed to update task status:', error);
+            this.showToast('Failed to update task status', 'error');
+            // Revert local state
+            await this.loadData();
+        }
     }
 
     renderTaskItem(task) {
@@ -927,7 +1026,7 @@ class Dash {
         }
 
         return `
-            <div class="task-item ${isCompleted ? 'completed' : ''}" data-id="${task.id}">
+            <div class="task-item kanban-card ${isCompleted ? 'completed' : ''}" data-id="${task.id}" draggable="true">
                 <button class="checkbox ${isCompleted ? 'checked' : ''} ${priorityClass}"
                         onclick="app.promptCompleteTask(${task.id}); event.stopPropagation();"></button>
                 <div class="task-content" onclick="app.openDetailPanel(${task.id})">
@@ -1860,8 +1959,12 @@ class Dash {
                 // Special handling for upcoming dropdown toggle
                 if (el.classList.contains('nav-dropdown-toggle')) {
                     e.preventDefault();
-                    this.setView(el.dataset.view);
+                    e.stopPropagation();
                     this.toggleUpcomingDropdown();
+                    // Set view to upcoming (general) when clicking toggle
+                    if (!this.currentView.startsWith('upcoming')) {
+                        this.setView('upcoming');
+                    }
                 } else {
                     this.setView(el.dataset.view);
                 }

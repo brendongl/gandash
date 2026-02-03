@@ -2278,7 +2278,8 @@ input[type="time"].small-input {
     gap: 20px;
     padding: 20px;
     height: 100%;
-    overflow-x: auto;
+    width: 100%;
+    max-width: 100%;
 }
 
 .kanban-column {
@@ -2287,7 +2288,7 @@ input[type="time"].small-input {
     padding: 16px;
     display: flex;
     flex-direction: column;
-    min-width: 300px;
+    min-width: 0;
     max-height: calc(100vh - 140px);
 }
 
@@ -2325,6 +2326,27 @@ input[type="time"].small-input {
 
 .kanban-tasks .task-item {
     margin-bottom: 0;
+}
+
+/* Drag and Drop Styles */
+.kanban-card {
+    cursor: grab;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.kanban-card:active {
+    cursor: grabbing;
+}
+
+.kanban-card.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+}
+
+.kanban-tasks.drag-over {
+    background: rgba(99, 102, 241, 0.1);
+    border: 2px dashed var(--accent-color);
+    border-radius: var(--radius-md);
 }
 
 /* Mobile Kanban */
