@@ -698,8 +698,10 @@ class Dash {
     renderLinks() {
         const container = document.getElementById('tasks-list');
         const emptyState = document.getElementById('empty-state');
+        const taskCount = document.getElementById('task-count');
         
-        document.getElementById('task-count').textContent = `${this.links.length} link${this.links.length !== 1 ? 's' : ''}`;
+        if (!container) return; // Guard against missing elements
+        if (taskCount) taskCount.textContent = `${this.links.length} link${this.links.length !== 1 ? 's' : ''}`;
         
         if (this.links.length === 0) {
             container.innerHTML = '';
@@ -840,9 +842,11 @@ class Dash {
         const kanbanContainer = document.getElementById('tasks-list');
         const tableContainer = document.getElementById('tasks-table-container');
         const emptyState = document.getElementById('empty-state');
+        const taskCount = document.getElementById('task-count');
         const filtered = this.getFilteredTasks();
 
-        document.getElementById('task-count').textContent = `${filtered.length} task${filtered.length !== 1 ? 's' : ''}`;
+        if (!kanbanContainer) return; // Guard against missing elements
+        if (taskCount) taskCount.textContent = `${filtered.length} task${filtered.length !== 1 ? 's' : ''}`;
 
         if (filtered.length === 0) {
             kanbanContainer.innerHTML = '';
@@ -869,6 +873,7 @@ class Dash {
 
     renderKanbanView(tasks) {
         const kanbanContainer = document.getElementById('tasks-list');
+        if (!kanbanContainer) return; // Guard against missing elements
         
         // Group tasks by status
         const todoTasks = tasks.filter(t => t.status === 'pending' || t.status === 'todo' || !t.status);
@@ -1125,8 +1130,10 @@ class Dash {
         
         const container = document.getElementById('tasks-list');
         const emptyState = document.getElementById('empty-state');
+        const taskCount = document.getElementById('task-count');
         
-        document.getElementById('task-count').textContent = `${this.reminders.length} reminder${this.reminders.length !== 1 ? 's' : ''}`;
+        if (!container) return; // Guard against missing elements
+        if (taskCount) taskCount.textContent = `${this.reminders.length} reminder${this.reminders.length !== 1 ? 's' : ''}`;
 
         if (this.reminders.length === 0) {
             container.innerHTML = '';
@@ -1169,6 +1176,7 @@ class Dash {
 
     renderPeople() {
         const container = document.getElementById('people-list');
+        if (!container) return; // Element removed in v0.2.1
         container.innerHTML = this.people.map(p => `
             <div class="person-item ${this.currentView === 'person:' + p.id ? 'active' : ''}"
                  data-view="person:${p.id}" onclick="app.setView('person:${p.id}')">

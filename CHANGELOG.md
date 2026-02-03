@@ -2,6 +2,36 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.2.5] - 2026-02-03
+
+### Fixed
+- **CRITICAL BUG**: Fixed JavaScript initialization crash that prevented ALL features from working
+  - Root cause: `renderPeople()` tried to access `#people-list` element which was removed in v0.2.1
+  - The crash on line 1173 prevented JavaScript from initializing, breaking:
+    - Dropdown toggle event listeners (including "Upcoming" dropdown)
+    - All interactive features
+    - Task creation, editing, filtering
+  - Added null check: `if (!container) return;` in `renderPeople()`
+  - This was the actual root cause of the dropdown not working (not event binding or CSS)
+
+### Improved
+- **Enhanced Error Resilience**: Added defensive null checks to all major render functions
+  - `renderLinks()`: Added null check for container and task count elements
+  - `renderReminders()`: Added null check for container and task count elements
+  - `renderTasks()`: Added null check for kanban container and task count element
+  - `renderKanbanView()`: Added null check for kanban container
+  - `renderUpcomingProjects()`: Already had null check (safe)
+  - `populateFilterSelects()`: Already had null checks (safe)
+  - `renderTableView()`: Already had null check (safe)
+  - App now gracefully handles missing DOM elements instead of crashing
+
+### Technical Details
+The `#people-list` element was removed when we cleaned up the Assignees menu item in v0.2.1, but the `renderPeople()` function was still being called during initialization. Without the null check, `container.innerHTML = ...` threw an error, stopping all JavaScript execution. This prevented event listeners from being attached, making the app appear broken even though the HTML/CSS was correct.
+
+All debug logging from v0.2.4 can be removed now that the real issue is fixed.
+
+---
+
 ## [0.2.4] - 2026-02-03
 
 ### Fixed
