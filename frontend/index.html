@@ -54,7 +54,7 @@
                 <div class="logo">
                     <i class="fas fa-cube"></i>
                     <span>GanDash</span>
-                    <span class="version-badge" id="version-badge">v0.2.7</span>
+                    <span class="version-badge" id="version-badge">v0.3.0</span>
                 </div>
                 <div class="akubot-status" id="akubot-status">
                     <span class="status-dot idle" id="status-dot"></span>
@@ -68,9 +68,43 @@
                     <i class="fas fa-check-square"></i>
                     <span>Tasks</span>
                 </div>
+                <div class="module-item" data-module="calendar">
+                    <i class="fas fa-calendar"></i>
+                    <span>Calendar</span>
+                </div>
             </nav>
 
             <div class="sidebar-divider"></div>
+
+            <!-- Calendar Sub-Navigation -->
+            <nav class="calendar-nav hidden" id="calendar-nav">
+                <div class="nav-section">
+                    <a href="#" class="nav-item" data-calendar-filter="all">
+                        <i class="fas fa-calendar"></i>
+                        <span>All Events</span>
+                    </a>
+                    <a href="#" class="nav-item" data-calendar-filter="event">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>Events</span>
+                    </a>
+                    <a href="#" class="nav-item" data-calendar-filter="reminder">
+                        <i class="fas fa-bell"></i>
+                        <span>Reminders</span>
+                    </a>
+                    <a href="#" class="nav-item" data-calendar-filter="birthday">
+                        <i class="fas fa-birthday-cake"></i>
+                        <span>Birthdays</span>
+                    </a>
+                    <a href="#" class="nav-item" data-calendar-filter="anniversary">
+                        <i class="fas fa-heart"></i>
+                        <span>Anniversaries</span>
+                    </a>
+                    <a href="#" class="nav-item" data-calendar-filter="tasks">
+                        <i class="fas fa-check-square"></i>
+                        <span>Tasks</span>
+                    </a>
+                </div>
+            </nav>
 
             <!-- Tasks Sub-Navigation -->
             <nav class="tasks-nav" id="tasks-nav">
@@ -141,6 +175,31 @@
                     <div class="search-box">
                         <i class="fas fa-search"></i>
                         <input type="text" id="search-input" placeholder="Search tasks...">
+                    </div>
+                    
+                    <!-- Calendar Controls -->
+                    <div class="calendar-controls hidden" id="calendar-controls">
+                        <button class="btn btn-sm" id="calendar-today-btn">
+                            <i class="fas fa-calendar-day"></i> Today
+                        </button>
+                        <div class="calendar-nav-btns">
+                            <button class="btn-icon" id="calendar-prev-btn" title="Previous">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="btn-icon" id="calendar-next-btn" title="Next">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Calendar View Toggle (Week/Month) -->
+                    <div class="view-toggle hidden" id="calendar-view-toggle">
+                        <button class="view-toggle-btn active" data-calendar-view="week" title="Week View">
+                            <i class="fas fa-calendar-week"></i>
+                        </button>
+                        <button class="view-toggle-btn" data-calendar-view="month" title="Month View">
+                            <i class="fas fa-calendar"></i>
+                        </button>
                     </div>
                     
                     <!-- View Toggle (Kanban/List) -->
@@ -377,8 +436,20 @@
                 </div>
             </div>
             
+            <!-- Calendar Container -->
+            <div class="calendar-container hidden" id="calendar-container">
+                <div class="loading" id="calendar-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Loading...</span>
+                </div>
+                <div class="calendar-view" id="calendar-view"></div>
+            </div>
+
             <!-- Floating Action Button -->
             <button class="fab" id="fab-add-task" title="Add new task">
+                <i class="fas fa-plus"></i>
+            </button>
+            <button class="fab hidden" id="fab-add-event" title="Add new event">
                 <i class="fas fa-plus"></i>
             </button>
         </main>
@@ -697,6 +768,66 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary close-quick-add-btn">Cancel</button>
                 <button class="btn btn-primary" id="save-quick-add-btn">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Calendar Event Modal -->
+    <div class="modal hidden" id="event-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content modal-md">
+            <div class="modal-header">
+                <h3 id="event-modal-title">New Event</h3>
+                <button class="btn-icon close-event-modal-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="event-title" placeholder="Event title">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="event-description" placeholder="Add description..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="event-date">
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <input type="time" id="event-time">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="event-type">
+                            <option value="event">Event</option>
+                            <option value="reminder">Reminder</option>
+                            <option value="birthday">Birthday</option>
+                            <option value="anniversary">Anniversary</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Color</label>
+                        <input type="color" id="event-color" value="#1e88e5">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Recurrence (for birthdays/anniversaries)</label>
+                    <select id="event-recurrence">
+                        <option value="">None</option>
+                        <option value="yearly">Yearly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-event-modal-btn">Cancel</button>
+                <button class="btn btn-danger hidden" id="delete-event-btn">Delete</button>
+                <button class="btn btn-primary" id="save-event-btn">Save</button>
             </div>
         </div>
     </div>

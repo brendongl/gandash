@@ -2,6 +2,59 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.3.0] - 2026-02-03
+
+### Added - MAJOR FEATURE: Calendar Module 📅
+- **Calendar Module Navigation**: New "Calendar" module in sidebar (next to Tasks)
+  - Icon: `fas fa-calendar`
+  - Switches entire view to calendar mode
+- **Calendar Views**:
+  - Weekly view (default) - 7-day grid with time slots
+  - Monthly view - Full month grid with event badges
+  - Toggle between views with header buttons
+- **Event Types**:
+  - Events (meetings, appointments)
+  - Reminders (quick notes with date/time)
+  - Birthdays (recurring yearly)
+  - Anniversaries (recurring yearly)
+  - Tasks (existing tasks with due dates integrated into calendar)
+- **Calendar Features**:
+  - Click any day to add new event
+  - Click event to view/edit details
+  - Today button to jump to current date
+  - Previous/Next navigation buttons
+  - Different colors per event type
+  - Filter by event type in sidebar
+  - Tasks with due dates appear on calendar automatically
+- **Backend API**:
+  - `GET /api/calendar-events` - Fetch all calendar events
+  - `POST /api/calendar-events` - Create new event
+  - `PATCH /api/calendar-events/:id` - Update event
+  - `DELETE /api/calendar-events/:id` - Delete event
+- **NocoDB Tables**:
+  - New `calendar_events` table created
+  - Fields: id, title, description, date, time, type, recurrence, color
+
+### Changed
+- Version bumped to 0.3.0 (major feature release)
+- Updated version badge to v0.3.0
+- FAB (Floating Action Button) now context-aware:
+  - Shows "Add Task" in Tasks module
+  - Shows "Add Event" in Calendar module
+- Header controls adapt based on active module:
+  - Task controls (kanban/list toggle, sort, filter) for Tasks module
+  - Calendar controls (week/month toggle, today, prev/next) for Calendar module
+
+### Technical Details
+- Calendar state management added to Dash class
+- Module switching system implemented
+- Week view: 7 columns with scrollable event lists
+- Month view: 6-week grid with event dots/badges
+- Event colors customizable via color picker
+- Recurrence support for birthdays/anniversaries
+- Calendar events and tasks shown together in unified view
+- Responsive design for mobile calendar views
+
 ## [0.2.7] - 2026-02-03
 
 ### Fixed

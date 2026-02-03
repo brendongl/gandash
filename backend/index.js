@@ -631,6 +631,74 @@ function calculateNextDueDate(baseDate, rule) {
     return next;
 }
 
+// ==================== CALENDAR EVENTS ====================
+app.get('/api/calendar-events', async (req, res) => {
+    try {
+        const result = await nocodb.getRecords('calendar_events');
+        const events = (result.list || []).map(e => ({
+            id: e.Id,
+            title: e.Title || '',
+            description: e.Description || '',
+            date: e.Date || null,
+            time: e.Time || null,
+            type: e.Type || 'event',
+            recurrence: e.Recurrence || null,
+            color: e.Color || '#1e88e5',
+            createdAt: e.CreatedAt || e['Created At']
+        }));
+        res.json(events);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/api/calendar-events', async (req, res) => {
+    try {
+        const data = {
+            'Title': req.body.title,
+            'Description': req.body.description || '',
+            'Date': req.body.date || null,
+            'Time': req.body.time || null,
+            'Type': req.body.type || 'event',
+            'Recurrence': req.body.recurrence || null,
+            'Color': req.body.color || '#1e88e5',
+            'Created At': new Date().toISOString()
+        };
+        const result = await nocodb.createRecord('calendar_events', data);
+        res.json({ id: result.Id, ...req.body });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.patch('/api/calendar-events/:id', async (req, res) => {
+    try {
+        const eventId = parseInt(req.params.id);
+        const data = {};
+        if (req.body.title !== undefined) data['Title'] = req.body.title;
+        if (req.body.description !== undefined) data['Description'] = req.body.description;
+        if (req.body.date !== undefined) data['Date'] = req.body.date;
+        if (req.body.time !== undefined) data['Time'] = req.body.time;
+        if (req.body.type !== undefined) data['Type'] = req.body.type;
+        if (req.body.recurrence !== undefined) data['Recurrence'] = req.body.recurrence;
+        if (req.body.color !== undefined) data['Color'] = req.body.color;
+        
+        await nocodb.updateRecord('calendar_events', eventId, data);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/api/calendar-events/:id', async (req, res) => {
+    try {
+        await nocodb.deleteRecord('calendar_events', parseInt(req.params.id));
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // ==================== REMINDERS ====================
 app.get('/api/reminders', async (req, res) => {
     try {
@@ -812,6 +880,19 @@ app.post('/api/setup', async (req, res) => {
     try {
         // Create additional tables if they don't exist
         const tables = [
+            {
+                name: 'Calendar_Events',
+                columns: [
+                    { column_name: 'title', title: 'Title', uidt: 'SingleLineText' },
+                    { column_name: 'description', title: 'Description', uidt: 'LongText' },
+                    { column_name: 'date', title: 'Date', uidt: 'Date' },
+                    { column_name: 'time', title: 'Time', uidt: 'Time' },
+                    { column_name: 'type', title: 'Type', uidt: 'SingleSelect', dtxp: 'event,reminder,birthday,anniversary' },
+                    { column_name: 'recurrence', title: 'Recurrence', uidt: 'SingleLineText' },
+                    { column_name: 'color', title: 'Color', uidt: 'SingleLineText' },
+                    { column_name: 'created_at', title: 'Created At', uidt: 'DateTime' }
+                ]
+            },
             {
                 name: 'Subtasks',
                 columns: [
