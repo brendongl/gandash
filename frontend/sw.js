@@ -1,4 +1,4 @@
-// GanDash Service Worker v0.3.6 - NUCLEAR CACHE BUSTING
+// GanDash Service Worker v0.3.7 - NUCLEAR CACHE BUSTING
 
 // Use timestamp instead of version to force cache invalidation
 const CACHE_NAME = 'gandash-v' + Date.now();
@@ -16,7 +16,7 @@ const STATIC_ASSETS = [
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker v0.3.6 - Cache:', CACHE_NAME);
+  console.log('[SW] Installing service worker v0.3.7 - Cache:', CACHE_NAME);
   
   event.waitUntil(
     caches.open(ASSETS_CACHE)
@@ -37,7 +37,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating service worker v0.3.6 - Cache:', CACHE_NAME);
+  console.log('[SW] Activating service worker v0.3.7 - Cache:', CACHE_NAME);
   
   event.waitUntil(
     caches.keys()
@@ -58,7 +58,7 @@ self.addEventListener('activate', (event) => {
         );
       })
       .then(() => {
-        console.log('[SW] Service worker v0.3.6 activated successfully');
+        console.log('[SW] Service worker v0.3.7 activated successfully');
         // Take control of all pages immediately
         return self.clients.claim();
       })

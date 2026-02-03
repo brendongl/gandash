@@ -2,6 +2,26 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.3.7] - 2026-02-03
+
+### Fixed - CRITICAL
+- **Version Detection Not Working** 🐛
+  - Root cause: Version numbers in app.js and sw.js were never updated from 0.3.6 to 0.3.7
+  - Debug banner showed "JS: ?" because version constant was outdated
+  - This was NOT a caching issue - the files were loading correctly
+  
+### Changed
+- **Robust Version Detection**: Improved version banner update logic
+  - Added `GANDASH_VERSION` constant at top of app.js
+  - Added `window.GANDASH_VERSION` for global access
+  - Self-invoking function with retry logic for DOM element
+  - Better console logging for debugging
+  
+### Technical Details
+- Updated app.js header and version constant: `0.3.6` → `0.3.7`
+- Updated sw.js header and console logs: `0.3.6` → `0.3.7`
+- Version detection now guaranteed to run and update debug banner
+
 ## [0.3.6] - 2026-02-03
 
 ### 🔥 BREAKING: Nuclear PWA Cache Fix

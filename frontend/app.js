@@ -1,12 +1,24 @@
-// GanDash - Personal Knowledge Manager Frontend v0.3.6
-console.log('=== GanDash v0.3.6 Loading ===');
+// GanDash - Personal Knowledge Manager Frontend v0.3.7
+const GANDASH_VERSION = '0.3.7';
+window.GANDASH_VERSION = GANDASH_VERSION;
+
+console.log('=== GanDash v0.3.7 Loading ===');
 console.log('Timestamp:', Date.now());
+console.log('Version:', GANDASH_VERSION);
 console.log('SortableJS available:', typeof Sortable);
 
-// Update debug info
-if (document.getElementById('js-version')) {
-    document.getElementById('js-version').textContent = '0.3.6';
-}
+// Update debug info - with robust DOM check
+(function updateVersionBanner() {
+    const jsVerEl = document.getElementById('js-version');
+    if (jsVerEl) {
+        jsVerEl.textContent = GANDASH_VERSION;
+        console.log('✅ Version banner updated to', GANDASH_VERSION);
+    } else {
+        console.error('❌ js-version element not found in DOM!');
+        // Retry after DOM is fully ready
+        setTimeout(updateVersionBanner, 50);
+    }
+})();
 
 if (typeof Sortable === 'undefined') {
     console.error('ERROR: SortableJS failed to load! Using cached version.');
