@@ -1,6 +1,6 @@
 {
   "name": "gandash",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "GanDash - Task management with Discord integration and Calendar",
   "main": "backend/index.js",
   "scripts": {
@@ -14,6 +14,7 @@
     "express": "^4.22.1",
     "form-data": "^4.0.5",
     "multer": "^2.0.2",
-    "node-cron": "^3.0.3"
+    "node-cron": "^3.0.3",
+    "sortablejs": "^1.15.6"
   }
 }

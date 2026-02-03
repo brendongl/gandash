@@ -353,16 +353,11 @@ class Dash {
         if (!task) return;
         
         const newStatus = task.status === 'completed' ? 'pending' : 'completed';
-        const completedAt = newStatus === 'completed' ? new Date().toISOString() : null;
-        
-        await this.updateTask(id, {
-            status: newStatus,
-            completedAt,
-            recurrenceRule: task.recurrenceRule,
-            recurrenceBase: task.recurrenceBase
-        });
         
         this.closeConfirmModal();
+        
+        // Use the same logic as updateTaskStatus
+        await this.updateTaskStatus(id, newStatus);
         
         // Update view panel if open
         if (this.currentTask?.id === id) {
@@ -929,112 +924,123 @@ class Dash {
     }
 
     setupDragAndDrop() {
-        const cards = document.querySelectorAll('.kanban-card');
         const columns = document.querySelectorAll('.kanban-tasks');
         
-        // Setup draggable cards
-        cards.forEach(card => {
-            card.addEventListener('dragstart', (e) => {
-                card.classList.add('dragging');
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('text/html', card.innerHTML);
-            });
-            
-            card.addEventListener('dragend', (e) => {
-                card.classList.remove('dragging');
-                // Remove drag-over from all columns on dragend
-                columns.forEach(col => col.classList.remove('drag-over'));
-            });
-        });
-        
-        // Setup drop zones
-        columns.forEach(column => {
-            column.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-                
-                const draggingCard = document.querySelector('.dragging');
-                if (!draggingCard) return;
-                
-                const afterElement = this.getDragAfterElement(column, e.clientY);
-                
-                if (afterElement == null) {
-                    column.appendChild(draggingCard);
-                } else {
-                    column.insertBefore(draggingCard, afterElement);
-                }
-            });
-            
-            column.addEventListener('drop', (e) => {
-                e.preventDefault();
-                const draggingCard = document.querySelector('.dragging');
-                if (!draggingCard) return;
-                
-                const newStatus = column.dataset.status;
-                const taskId = parseInt(draggingCard.dataset.id);
-                
-                // Remove drag-over class on drop
-                column.classList.remove('drag-over');
-                columns.forEach(col => col.classList.remove('drag-over'));
-                
-                // Update task status
-                this.updateTaskStatus(taskId, newStatus);
-            });
-            
-            column.addEventListener('dragenter', (e) => {
-                e.preventDefault();
-                column.classList.add('drag-over');
-            });
-            
-            column.addEventListener('dragleave', (e) => {
-                // Only remove if we're actually leaving the column container
-                const rect = column.getBoundingClientRect();
-                const x = e.clientX;
-                const y = e.clientY;
-                
-                if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
-                    column.classList.remove('drag-over');
-                }
-            });
-        });
+        // Dynamically import SortableJS from CDN if not already loaded
+        if (typeof Sortable === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js';
+            script.onload = () => this.initSortable(columns);
+            document.head.appendChild(script);
+        } else {
+            this.initSortable(columns);
+        }
     }
     
-    getDragAfterElement(container, y) {
-        const draggableElements = [...container.querySelectorAll('.kanban-card:not(.dragging)')];
-        
-        return draggableElements.reduce((closest, child) => {
-            const box = child.getBoundingClientRect();
-            const offset = y - box.top - box.height / 2;
-            
-            if (offset < 0 && offset > closest.offset) {
-                return { offset: offset, element: child };
-            } else {
-                return closest;
-            }
-        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    initSortable(columns) {
+        columns.forEach(column => {
+            new Sortable(column, {
+                group: 'kanban',
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                onEnd: (evt) => {
+                    const taskId = parseInt(evt.item.dataset.id);
+                    const newStatus = evt.to.dataset.status;
+                    this.updateTaskStatus(taskId, newStatus);
+                }
+            });
+        });
     }
     
     async updateTaskStatus(taskId, newStatus) {
         const task = this.tasks.find(t => t.id === taskId);
         if (!task) return;
         
-        // Update local state
-        task.status = newStatus;
-        
-        // Update in database
         try {
-            await this.api(`/tasks/${taskId}`, {
-                method: 'PATCH',
-                body: { status: newStatus }
-            });
+            // Handle recurring tasks when marked as completed
+            if (newStatus === 'completed' && task.recurrenceRule && task.status !== 'completed') {
+                await this.completeRecurringTask(task);
+            } else {
+                // Regular task status update
+                await this.api(`/tasks/${taskId}`, {
+                    method: 'PATCH',
+                    body: { 
+                        status: newStatus,
+                        completedAt: newStatus === 'completed' ? new Date().toISOString() : null
+                    }
+                });
+                
+                // Update local state
+                task.status = newStatus;
+                if (newStatus === 'completed') {
+                    task.completedAt = new Date().toISOString();
+                } else {
+                    task.completedAt = null;
+                }
+            }
             
-            this.showToast('Task status updated', 'success');
+            this.toast('Task status updated', 'success');
+            this.renderTasks();
+            this.updateCounts();
         } catch (error) {
             console.error('Failed to update task status:', error);
-            this.showToast('Failed to update task status', 'error');
-            // Revert local state
+            this.toast('Failed to update task status', 'error');
+            // Revert by reloading
             await this.loadData();
         }
+    }
+    
+    async completeRecurringTask(task) {
+        // Calculate next due date
+        const nextDueDate = this.calculateNextOccurrence(task);
+        if (!nextDueDate) {
+            // If we can't calculate next occurrence, just mark as complete
+            await this.api(`/tasks/${task.id}`, {
+                method: 'PATCH',
+                body: { status: 'completed', completedAt: new Date().toISOString() }
+            });
+            task.status = 'completed';
+            task.completedAt = new Date().toISOString();
+            return;
+        }
+        
+        // Create new instance with future due date
+        const newTaskData = {
+            title: task.title,
+            description: task.description,
+            dueDate: nextDueDate.toISOString(),
+            priority: task.priority,
+            projectId: task.projectId,
+            labelId: task.labelId,
+            assigneeId: task.assigneeId,
+            recurrenceRule: task.recurrenceRule,
+            recurrenceBase: task.recurrenceBase,
+            notifyEnabled: task.notifyEnabled,
+            notifyDaysBefore: task.notifyDaysBefore,
+            notifyTime: task.notifyTime,
+            notifyLate: task.notifyLate,
+            status: 'pending',
+            completedAt: null
+        };
+        
+        // Create new instance
+        const newTask = await this.api('/tasks', { method: 'POST', body: newTaskData });
+        
+        // Mark current instance as completed
+        await this.api(`/tasks/${task.id}`, {
+            method: 'PATCH',
+            body: { status: 'completed', completedAt: new Date().toISOString() }
+        });
+        
+        // Update local state - mark old as completed
+        task.status = 'completed';
+        task.completedAt = new Date().toISOString();
+        
+        // Add new task to local array
+        this.tasks.push({ ...newTaskData, id: newTask.id || newTask, createdAt: new Date().toISOString() });
+        
+        this.toast('Recurring task completed! Next instance created.', 'success');
     }
 
     renderTaskItem(task) {

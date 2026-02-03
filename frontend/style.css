@@ -2352,15 +2352,16 @@ input[type="time"].small-input {
     cursor: grabbing;
 }
 
-.kanban-card.dragging {
-    opacity: 0.5;
-    transform: rotate(2deg);
-}
-
-.kanban-tasks.drag-over {
+/* SortableJS Drag Styles */
+.sortable-ghost {
+    opacity: 0.4;
     background: rgba(99, 102, 241, 0.1);
     border: 2px dashed var(--accent-color);
-    border-radius: var(--radius-md);
+}
+
+.sortable-drag {
+    opacity: 1;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Mobile Kanban - HORIZONTAL SCROLL FIX */

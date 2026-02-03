@@ -2,6 +2,36 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.3.4] - 2026-02-03
+
+### Changed
+- **Replaced Custom Drag-Drop with SortableJS** 🎯
+  - Removed glitchy HTML5 drag-and-drop implementation
+  - Integrated SortableJS library (28k stars, industry standard)
+  - Smooth, professional drag-drop animations (150ms)
+  - No more persistent dotted borders or visual glitches
+  - Better touch support on mobile devices
+  - Cleaner code with fewer edge cases
+  - Ghost class styling for visual feedback during drag
+
+### Added
+- **Smart Recurring Task Completion** 🔄
+  - When a recurring task is marked complete:
+    - Creates new instance automatically with next due date
+    - Marks current instance as completed
+    - New instance appears in "Upcoming" view (not cluttering "Today")
+    - Keeps kanban board clean and organized
+  - Industry best practice approach (similar to Todoist)
+  - Calculates next occurrence based on recurrence rule
+  - Maintains all task properties (project, assignee, priority, etc.)
+  - Shows success message when recurring task is completed
+  
+### Improved
+- Drag-drop performance and reliability
+- Recurring task user experience
+- Kanban board stays clutter-free with smart scheduling
+- Visual feedback during drag operations
+
 ## [0.3.3] - 2026-02-03
 
 ### Fixed
