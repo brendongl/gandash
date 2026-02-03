@@ -529,6 +529,10 @@ class Dash {
         const isUpcomingView = this.currentView === 'upcoming' || this.currentView.startsWith('upcoming:');
 
         switch (this.currentView) {
+            case 'all':
+                // Show all tasks, no view-based filtering
+                if (!this.filters.showCompleted) filtered = filtered.filter(t => t.status !== 'completed');
+                break;
             case 'today':
                 filtered = filtered.filter(t => {
                     // Regular tasks: check dueDate
@@ -596,7 +600,7 @@ class Dash {
                     if (!this.filters.showCompleted) filtered = filtered.filter(t => t.status !== 'completed');
                 } else if (this.currentView.startsWith('tag:')) {
                     const tagId = parseInt(this.currentView.split(':')[1]);
-                    filtered = filtered.filter(t => t.tagIds?.includes(tagId));
+                    filtered = filtered.filter(t => t.labelId === tagId);
                     if (!this.filters.showCompleted) filtered = filtered.filter(t => t.status !== 'completed');
                 } else if (this.currentView.startsWith('person:')) {
                     const personId = parseInt(this.currentView.split(':')[1]);
@@ -613,7 +617,7 @@ class Dash {
             filtered = filtered.filter(t => t.assigneeId === parseInt(this.filters.assigneeId));
         }
         if (this.filters.labelId) {
-            filtered = filtered.filter(t => t.tagIds?.includes(parseInt(this.filters.labelId)));
+            filtered = filtered.filter(t => t.labelId === parseInt(this.filters.labelId));
         }
         
         // Apply priority filter (except on completed view)

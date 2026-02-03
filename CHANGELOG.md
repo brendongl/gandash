@@ -2,6 +2,26 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.2.6] - 2026-02-03
+
+### Fixed
+- **CRITICAL BUG**: Fixed label filter completely broken - all tasks disappeared when filtering by label
+  - Root cause: Filter logic checked `t.tagIds?.includes(labelId)` (array) but tasks use `t.labelId` (single integer)
+  - Fixed two locations in `getFilteredTasks()`:
+    - Line 607: Changed `t.tagIds?.includes(tagId)` → `t.labelId === tagId` for tag: view
+    - Line 615: Changed `t.tagIds?.includes(parseInt(this.filters.labelId))` → `t.labelId === parseInt(this.filters.labelId)` for label filter
+  - Label filtering now works correctly across all views
+
+### Added
+- **"All Tasks" View**: New sidebar nav item showing all tasks regardless of view/date filters
+  - Located at top of sidebar (before "Today")
+  - Icon: `fas fa-tasks`
+  - Shows all tasks in current display mode (Kanban or List)
+  - Still respects: priority filters, project filters, assignee filters, label filters, show/hide completed
+  - Bypasses view-based filtering (date ranges, recurring, etc.)
+
+---
+
 ## [0.2.5] - 2026-02-03
 
 ### Fixed
