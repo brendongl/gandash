@@ -2,6 +2,25 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.2.4] - 2026-02-03
+
+### Fixed
+- **Upcoming Dropdown Debugging**: Added extensive console logging to debug dropdown toggle issue
+  - Added logs in `toggleUpcomingDropdown()` to track state changes
+  - Added logs in event listener to verify click events are firing
+  - Logs track: function calls, element state, class changes
+  - This will help identify if issue is event binding, DOM manipulation, or CSS
+
+### Technical Details
+- Added console.log statements to trace execution flow:
+  - `toggleUpcomingDropdown()`: logs before/after state, element found, classes applied
+  - Event listener: logs when nav item clicked, confirms dropdown toggle detection
+- Next step: Test locally with browser DevTools console open to see what's happening
+- If events fire but dropdown doesn't expand, issue is CSS-related
+- If events don't fire, issue is event binding or selector matching
+
+---
+
 ## [0.2.3] - 2026-02-03
 
 ### Fixed

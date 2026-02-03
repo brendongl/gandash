@@ -1275,10 +1275,20 @@ class Dash {
     
     // Toggle upcoming dropdown expansion
     toggleUpcomingDropdown() {
+        console.log('toggleUpcomingDropdown() called');
+        console.log('Before toggle - upcomingDropdownExpanded:', this.upcomingDropdownExpanded);
+        
         this.upcomingDropdownExpanded = !this.upcomingDropdownExpanded;
         const dropdown = document.getElementById('upcoming-dropdown');
+        
+        console.log('After toggle - upcomingDropdownExpanded:', this.upcomingDropdownExpanded);
+        console.log('Dropdown element:', dropdown);
+        
         if (dropdown) {
             dropdown.classList.toggle('expanded', this.upcomingDropdownExpanded);
+            console.log('Dropdown classes after toggle:', dropdown.className);
+        } else {
+            console.error('Dropdown element not found!');
         }
     }
     
@@ -1956,8 +1966,11 @@ class Dash {
         // Navigation
         document.querySelectorAll('.nav-item[data-view]').forEach(el => {
             el.addEventListener('click', (e) => {
+                console.log('Nav item clicked:', el.className, el.dataset.view);
+                
                 // Special handling for upcoming dropdown toggle
                 if (el.classList.contains('nav-dropdown-toggle')) {
+                    console.log('Dropdown toggle detected!');
                     e.preventDefault();
                     e.stopPropagation();
                     this.toggleUpcomingDropdown();
@@ -1970,6 +1983,19 @@ class Dash {
                 }
             });
         });
+        
+        // Alternative: Add direct click handler to upcoming dropdown div
+        const upcomingDropdownDiv = document.getElementById('upcoming-dropdown');
+        if (upcomingDropdownDiv) {
+            // Click on the dropdown container itself
+            upcomingDropdownDiv.addEventListener('click', (e) => {
+                // Only toggle if clicking on the parent div or the toggle link itself
+                if (e.target.closest('.nav-dropdown-toggle') || e.target === upcomingDropdownDiv) {
+                    console.log('Upcoming dropdown div clicked');
+                    this.toggleUpcomingDropdown();
+                }
+            });
+        }
 
         // Task form
         document.getElementById('quick-add-btn')?.addEventListener('click', () => this.showTaskForm());
