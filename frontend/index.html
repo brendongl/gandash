@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>GanDash</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Pincode Login Screen -->
+    <div class="pincode-screen" id="pincode-screen">
+        <div class="pincode-container">
+            <div class="pincode-logo">
+                <i class="fas fa-cube"></i>
+                <span>GanDash</span>
+            </div>
+            <p class="pincode-label">Enter PIN to continue</p>
+            <div class="pincode-display" id="pincode-display">
+                <span class="pin-dot"></span>
+                <span class="pin-dot"></span>
+                <span class="pin-dot"></span>
+                <span class="pin-dot"></span>
+            </div>
+            <div class="pincode-error hidden" id="pincode-error">Incorrect PIN</div>
+            <div class="pincode-pad">
+                <button class="pin-btn" data-num="1">1</button>
+                <button class="pin-btn" data-num="2">2</button>
+                <button class="pin-btn" data-num="3">3</button>
+                <button class="pin-btn" data-num="4">4</button>
+                <button class="pin-btn" data-num="5">5</button>
+                <button class="pin-btn" data-num="6">6</button>
+                <button class="pin-btn" data-num="7">7</button>
+                <button class="pin-btn" data-num="8">8</button>
+                <button class="pin-btn" data-num="9">9</button>
+                <button class="pin-btn pin-backspace" data-action="backspace">
+                    <i class="fas fa-backspace"></i>
+                </button>
+                <button class="pin-btn" data-num="0">0</button>
+                <button class="pin-btn pin-enter" data-action="enter">
+                    <i class="fas fa-check"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile sidebar overlay -->
+    <div class="sidebar-overlay hidden" id="sidebar-overlay"></div>
+    
+    <div class="app hidden" id="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-cube"></i>
+                    <span>GanDash</span>
+                    <span class="version-badge" id="version-badge">v0.2.1</span>
+                </div>
+                <div class="akubot-status" id="akubot-status">
+                    <span class="status-dot idle" id="status-dot"></span>
+                    <span class="status-text" id="status-text">Akubot is idle</span>
+                </div>
+            </div>
+
+            <!-- Modules Navigation -->
+            <nav class="modules-nav">
+                <div class="module-item active" data-module="tasks">
+                    <i class="fas fa-check-square"></i>
+                    <span>Tasks</span>
+                </div>
+            </nav>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- Tasks Sub-Navigation -->
+            <nav class="tasks-nav" id="tasks-nav">
+                <div class="nav-section">
+                    <a href="#" class="nav-item active" data-view="today">
+                        <i class="fas fa-sun"></i>
+                        <span>Today</span>
+                        <span class="badge" id="today-count"></span>
+                    </a>
+                    <div class="nav-dropdown" id="upcoming-dropdown">
+                        <a href="#" class="nav-item nav-dropdown-toggle" data-view="upcoming">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Upcoming</span>
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+                        </a>
+                        <div class="nav-dropdown-content" id="upcoming-projects-list">
+                            <!-- Projects loaded dynamically -->
+                        </div>
+                    </div>
+                    <a href="#" class="nav-item" data-view="recurring">
+                        <i class="fas fa-repeat"></i>
+                        <span>Recurring</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="completed">
+                        <i class="fas fa-check-double"></i>
+                        <span>Completed</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="reminders">
+                        <i class="fas fa-bell"></i>
+                        <span>Reminders</span>
+                        <span class="badge" id="reminders-count"></span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="section-header">
+                        <span>Quick Links</span>
+                    </div>
+                    <a href="#" class="nav-item" data-view="links">
+                        <i class="fas fa-link"></i>
+                        <span>Links</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn-icon" id="settings-btn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="btn-icon mobile-menu-btn" id="mobile-menu-btn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 id="view-title">Today</h2>
+                    <span class="task-count" id="task-count"></span>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Search tasks...">
+                    </div>
+                    
+                    <!-- View Toggle (Kanban/List) -->
+                    <div class="view-toggle" id="view-toggle">
+                        <button class="view-toggle-btn active" data-display-mode="kanban" title="Kanban View">
+                            <i class="fas fa-columns"></i>
+                        </button>
+                        <button class="view-toggle-btn" data-display-mode="list" title="List View">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Sort Dropdown -->
+                    <div class="dropdown" id="sort-dropdown">
+                        <button class="btn-icon" id="sort-btn" title="Sort">
+                            <i class="fas fa-sort"></i>
+                        </button>
+                        <div class="dropdown-menu" id="sort-menu">
+                            <div class="dropdown-header">Sort by</div>
+                            <div class="dropdown-item active" data-sort="priority">
+                                <i class="fas fa-flag"></i> Priority
+                            </div>
+                            <div class="dropdown-item" data-sort="dueDate">
+                                <i class="fas fa-calendar"></i> Due Date
+                            </div>
+                            <div class="dropdown-item" data-sort="name">
+                                <i class="fas fa-font"></i> Name
+                            </div>
+                            <div class="dropdown-item" data-sort="created">
+                                <i class="fas fa-clock"></i> Created
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Filter Dropdown -->
+                    <div class="dropdown" id="filter-dropdown">
+                        <button class="btn-icon" id="filter-btn" title="Filter">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-wide" id="filter-menu">
+                            <div class="dropdown-header">Filter</div>
+                            <label class="dropdown-checkbox">
+                                <input type="checkbox" id="filter-show-completed">
+                                <span>Show completed</span>
+                            </label>
+                            <div class="dropdown-divider"></div>
+                            
+                            <!-- Project Filter -->
+                            <div class="filter-section">
+                                <div class="dropdown-header">Project</div>
+                                <select id="filter-project" class="filter-select">
+                                    <option value="">All Projects</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Assignee Filter -->
+                            <div class="filter-section">
+                                <div class="dropdown-header">Assignee</div>
+                                <select id="filter-assignee" class="filter-select">
+                                    <option value="">All Assignees</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Label/Tag Filter -->
+                            <div class="filter-section">
+                                <div class="dropdown-header">Label</div>
+                                <select id="filter-label" class="filter-select">
+                                    <option value="">All Labels</option>
+                                </select>
+                            </div>
+                            
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-header">Priority</div>
+                            <label class="dropdown-checkbox">
+                                <input type="checkbox" id="filter-p1" checked>
+                                <span class="priority-dot p1"></span> P1 - Urgent
+                            </label>
+                            <label class="dropdown-checkbox">
+                                <input type="checkbox" id="filter-p2" checked>
+                                <span class="priority-dot p2"></span> P2 - High
+                            </label>
+                            <label class="dropdown-checkbox">
+                                <input type="checkbox" id="filter-p3" checked>
+                                <span class="priority-dot p3"></span> P3 - Medium
+                            </label>
+                            <label class="dropdown-checkbox">
+                                <input type="checkbox" id="filter-p4" checked>
+                                <span class="priority-dot p4"></span> P4 - Low
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Task Form placeholder (quick-add removed - using FAB instead) -->
+            <div class="quick-add hidden" id="quick-add"></div>
+
+            <!-- Task Form (hidden by default) -->
+            <div class="task-form-container hidden" id="task-form-container">
+                <form class="task-form" id="task-form">
+                    <input type="text" id="task-title-input" placeholder="What needs to be done?" autofocus>
+                    <textarea id="task-desc-input" placeholder="Add description..."></textarea>
+                    <div class="task-form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Due Date</label>
+                            <input type="date" id="task-due-input">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Time</label>
+                            <input type="time" id="task-due-time-input">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-flag"></i> Priority</label>
+                            <select id="task-priority-input">
+                                <option value="4">P4 - Low</option>
+                                <option value="3">P3 - Medium</option>
+                                <option value="2">P2 - High</option>
+                                <option value="1">P1 - Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="task-form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-folder"></i> Project</label>
+                            <div class="select-with-add">
+                                <select id="task-project-input">
+                                    <option value="">No project</option>
+                                </select>
+                                <button type="button" class="btn-icon-sm" id="inline-add-project" title="New Project">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-tags"></i> Label</label>
+                            <div class="select-with-add">
+                                <select id="task-label-input">
+                                    <option value="">No label</option>
+                                </select>
+                                <button type="button" class="btn-icon-sm" id="inline-add-label" title="New Label">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Assignee</label>
+                            <select id="task-assignee-input">
+                                <option value="">Unassigned</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="task-form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-repeat"></i> Recurrence</label>
+                            <select id="task-recurrence-input">
+                                <option value="">No recurrence</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="biweekly">Bi-weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="quarterly">Quarterly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Reschedule From</label>
+                            <select id="task-recurrence-base-input">
+                                <option value="due_date">Due date</option>
+                                <option value="completion_date">Completion date</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="task-form-row">
+                        <div class="form-group full-width">
+                            <label><i class="fas fa-bell"></i> Notifications</label>
+                            <div class="notification-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="notify-enabled">
+                                    Enable notification (Discord)
+                                </label>
+                                <div class="notify-sub-options hidden" id="notify-sub-options">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="notify-advance-enabled">
+                                        Notify in advance:
+                                        <input type="number" id="notify-days-before" value="1" min="1" max="30" class="small-input"> days before
+                                        at <input type="time" id="notify-time" value="10:00" class="small-input">
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="notify-late-enabled">
+                                        Notify if late (daily reminder)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="task-form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancel-task-btn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Task
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tasks Container -->
+            <div class="tasks-container">
+                <div class="loading" id="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Loading...</span>
+                </div>
+                <!-- Kanban View -->
+                <div class="tasks-list" id="tasks-list"></div>
+                <!-- List View (Table) -->
+                <div class="tasks-table-container hidden" id="tasks-table-container">
+                    <table class="tasks-table">
+                        <thead>
+                            <tr>
+                                <th width="40"></th>
+                                <th>Task</th>
+                                <th width="150">Due Date</th>
+                                <th width="120">Priority</th>
+                                <th width="150">Project</th>
+                                <th width="120">Assignee</th>
+                                <th width="120">Label</th>
+                                <th width="80">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasks-table-body"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state hidden" id="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h3>No tasks here</h3>
+                    <p>Add a task to get started</p>
+                </div>
+            </div>
+            
+            <!-- Floating Action Button -->
+            <button class="fab" id="fab-add-task" title="Add new task">
+                <i class="fas fa-plus"></i>
+            </button>
+        </main>
+
+        <!-- Task View Panel (read-only) -->
+        <aside class="detail-panel hidden" id="detail-panel">
+            <div class="detail-header">
+                <h3>Task Details</h3>
+                <div class="detail-header-actions">
+                    <button class="btn btn-secondary btn-sm" id="edit-task-btn">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn-icon" id="close-detail-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="detail-body" id="detail-view-mode">
+                <div class="detail-title-row">
+                    <button class="checkbox" id="detail-checkbox"></button>
+                    <h2 class="detail-title-display" id="detail-title-display"></h2>
+                </div>
+                
+                <p class="detail-description-display" id="detail-description-display"></p>
+
+                <div class="detail-info-grid">
+                    <div class="detail-info-item" id="info-due-date">
+                        <i class="fas fa-calendar"></i>
+                        <span id="display-due-date">No due date</span>
+                    </div>
+                    <div class="detail-info-item" id="info-priority">
+                        <i class="fas fa-flag"></i>
+                        <span id="display-priority">P4 - Low</span>
+                    </div>
+                    <div class="detail-info-item" id="info-project">
+                        <i class="fas fa-folder"></i>
+                        <span id="display-project">No project</span>
+                    </div>
+                    <div class="detail-info-item" id="info-assignee">
+                        <i class="fas fa-user"></i>
+                        <span id="display-assignee">Unassigned</span>
+                    </div>
+                    <div class="detail-info-item" id="info-recurrence">
+                        <i class="fas fa-repeat"></i>
+                        <span id="display-recurrence">No recurrence</span>
+                    </div>
+                    <div class="detail-info-item" id="info-labels">
+                        <i class="fas fa-tags"></i>
+                        <span id="display-labels">No labels</span>
+                    </div>
+                    <div class="detail-info-item" id="info-notifications">
+                        <i class="fas fa-bell"></i>
+                        <span id="display-notifications">Notifications off</span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="section-header">
+                        <label><i class="fas fa-list-check"></i> Subtasks</label>
+                    </div>
+                    <div id="subtasks-display"></div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="section-header">
+                        <label><i class="fas fa-paperclip"></i> Attachments</label>
+                    </div>
+                    <div id="attachments-display" class="attachments-grid"></div>
+                </div>
+            </div>
+            <div class="detail-footer">
+                <button class="btn btn-nudge" id="nudge-task-btn" title="Send nudge notification to assignee">
+                    <i class="fas fa-bell"></i> Nudge
+                </button>
+                <button class="btn btn-danger" id="delete-task-btn">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div class="modal hidden" id="edit-task-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3>Edit Task</h3>
+                <button class="btn-icon close-edit-modal-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="edit-title" placeholder="Task title">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="edit-description" placeholder="Add description..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Due Date</label>
+                        <input type="date" id="edit-due-date">
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <input type="time" id="edit-due-time">
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="edit-priority">
+                            <option value="4">P4 - Low</option>
+                            <option value="3">P3 - Medium</option>
+                            <option value="2">P2 - High</option>
+                            <option value="1">P1 - Urgent</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Project</label>
+                        <select id="edit-project"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Assignee</label>
+                        <select id="edit-assignee"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Recurrence</label>
+                        <select id="edit-recurrence">
+                            <option value="">No recurrence</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="biweekly">Bi-weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Labels</label>
+                    <div class="tags-selector" id="edit-tags"></div>
+                </div>
+                <div class="form-group">
+                    <label>Notifications</label>
+                    <div class="notification-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="edit-notify-enabled">
+                            Enable notification (Discord)
+                        </label>
+                        <div class="notify-sub-options" id="edit-notify-sub-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="edit-notify-advance">
+                                Notify in advance:
+                                <input type="number" id="edit-notify-days" value="1" min="1" max="30" class="small-input"> days before
+                                at <input type="time" id="edit-notify-time" value="10:00" class="small-input">
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="edit-notify-late">
+                                Notify if late (daily reminder)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Subtasks</label>
+                    <div id="edit-subtasks-list"></div>
+                    <div class="add-subtask-row">
+                        <input type="text" id="edit-new-subtask" placeholder="Add subtask...">
+                        <button type="button" class="btn btn-sm" id="edit-add-subtask-btn">Add</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-paperclip"></i> Attachments</label>
+                    <div id="edit-attachments-list" class="attachments-grid"></div>
+                    <div class="add-attachment-row">
+                        <input type="file" id="edit-attachment-input" multiple accept="image/*,application/pdf,.doc,.docx,.txt">
+                        <button type="button" class="btn btn-sm" id="edit-upload-attachment-btn">
+                            <i class="fas fa-upload"></i> Upload
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="send-reminder-btn" title="Send Discord reminder">
+                    <i class="fab fa-discord"></i> Send Reminder
+                </button>
+                <div style="flex:1"></div>
+                <button class="btn btn-secondary close-edit-modal-btn">Cancel</button>
+                <button class="btn btn-primary" id="save-edit-btn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal hidden" id="settings-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content modal-md">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="btn-icon close-settings-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h4>General</h4>
+                    <div class="form-group">
+                        <label>Timezone</label>
+                        <select id="settings-timezone">
+                            <option value="Asia/Ho_Chi_Minh">Vietnam (UTC+7)</option>
+                            <option value="Asia/Bangkok">Bangkok (UTC+7)</option>
+                            <option value="Asia/Singapore">Singapore (UTC+8)</option>
+                            <option value="Asia/Tokyo">Tokyo (UTC+9)</option>
+                            <option value="America/New_York">New York (UTC-5)</option>
+                            <option value="America/Los_Angeles">Los Angeles (UTC-8)</option>
+                            <option value="Europe/London">London (UTC+0)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Default advance reminder time</label>
+                        <input type="time" id="settings-default-remind-time" value="10:00">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4><i class="fab fa-discord"></i> Discord</h4>
+                    <div class="form-group">
+                        <label>Notification Channel</label>
+                        <select id="settings-discord-channel">
+                            <option value="1465902062146555915">akubot-notifications</option>
+                            <option value="1465652798971711615">akubot-general-chat</option>
+                            <option value="1465960044905500795">akubot-general-chat2</option>
+                            <option value="1465743699030839316">local-llm-chat</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4><i class="fas fa-folder"></i> Projects</h4>
+                    <div id="settings-projects-list" class="settings-list"></div>
+                    <div class="add-item-row">
+                        <input type="text" id="settings-new-project" placeholder="New project name...">
+                        <input type="color" id="settings-project-color" value="#1e88e5">
+                        <button type="button" class="btn btn-sm" id="settings-add-project">Add</button>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4><i class="fas fa-tags"></i> Labels</h4>
+                    <div id="settings-labels-list" class="settings-list"></div>
+                    <div class="add-item-row">
+                        <input type="text" id="settings-new-label" placeholder="New label name...">
+                        <input type="color" id="settings-label-color" value="#43a047">
+                        <button type="button" class="btn btn-sm" id="settings-add-label">Add</button>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4><i class="fas fa-users"></i> Assignees</h4>
+                    <div id="settings-assignees-list" class="settings-list"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-settings-btn">Close</button>
+                <button class="btn btn-primary" id="save-settings-btn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Complete Modal -->
+    <div class="modal hidden" id="confirm-complete-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h3>Complete Task?</h3>
+                <button class="btn-icon close-confirm-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Mark "<strong id="confirm-task-title"></strong>" as complete?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-confirm-btn">Cancel</button>
+                <button class="btn btn-primary" id="confirm-complete-btn">
+                    <i class="fas fa-check"></i> Complete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Project/Label Modal -->
+    <div class="modal hidden" id="quick-add-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h3 id="quick-add-title">New Project</h3>
+                <button class="btn-icon close-quick-add-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="quick-add-name" placeholder="Enter name...">
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-picker" id="quick-add-color-picker">
+                        <button type="button" class="color-btn selected" data-color="#e53935" style="background:#e53935"></button>
+                        <button type="button" class="color-btn" data-color="#fb8c00" style="background:#fb8c00"></button>
+                        <button type="button" class="color-btn" data-color="#fdd835" style="background:#fdd835"></button>
+                        <button type="button" class="color-btn" data-color="#43a047" style="background:#43a047"></button>
+                        <button type="button" class="color-btn" data-color="#1e88e5" style="background:#1e88e5"></button>
+                        <button type="button" class="color-btn" data-color="#8e24aa" style="background:#8e24aa"></button>
+                        <button type="button" class="color-btn" data-color="#6d4c41" style="background:#6d4c41"></button>
+                        <button type="button" class="color-btn" data-color="#757575" style="background:#757575"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-quick-add-btn">Cancel</button>
+                <button class="btn btn-primary" id="save-quick-add-btn">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
