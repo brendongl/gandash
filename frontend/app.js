@@ -995,7 +995,7 @@ class Dash {
         try {
             await this.api(`/tasks/${taskId}`, {
                 method: 'PATCH',
-                body: JSON.stringify({ status: newStatus })
+                body: { status: newStatus }
             });
             
             this.showToast('Task status updated', 'success');

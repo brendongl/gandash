@@ -2,6 +2,42 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.2.3] - 2026-02-03
+
+### Fixed
+- **CRITICAL BUG**: Fixed drag-and-drop card move causing 400 Bad Request error
+  - Root cause: Double JSON encoding in `updateTaskStatus()` function
+  - The `api()` helper already calls `JSON.stringify()`, but `updateTaskStatus()` was calling it again
+  - This caused the backend to receive `""{\"status\":\"in-progress\"}"` instead of `{"status":"in-progress"}`
+  - Removed redundant `JSON.stringify()` call in frontend/app.js line 998
+  - Drag-and-drop status updates now work correctly
+- **Verified**: All NocoDB field mappings are correct
+  - Backend properly maps: `status` (frontend) → `Status` (NocoDB)
+  - Backend properly maps: `projectId` (frontend) → `Project ID` (NocoDB)
+  - Backend properly maps: `dueDate` (frontend) → `Due Date` (NocoDB)
+  - All other field mappings verified and working correctly
+- **Verified**: Upcoming dropdown is properly implemented
+  - `renderUpcomingProjects()` function exists and works correctly
+  - Projects are fetched from API and rendered under "Upcoming" nav item
+  - Click handlers properly set view to `upcoming:projectId`
+  - Dropdown expand/collapse animation works via CSS transitions
+- **Verified**: Layout width is correct on desktop
+  - Sidebar is set to 260px via CSS variable `--sidebar-width`
+  - Main content uses `flex: 1` to fill remaining space
+  - No media query issues affecting desktop layout
+  - Layout uses proper flexbox implementation
+
+### Technical Details
+The double JSON encoding bug occurred because:
+1. Frontend `updateTaskStatus()` called: `JSON.stringify({ status: newStatus })`
+2. Then passed this string to `api()` which called: `JSON.stringify(options.body)` again
+3. Result: `""{\"status\":\"in-progress\"}"` (string containing escaped JSON)
+4. Express body-parser failed to parse this as valid JSON → 400 error
+
+Fix: Pass object directly to `api()`, let it handle the stringification once.
+
+---
+
 ## [0.2.2] - 2026-02-03
 
 ### Added
