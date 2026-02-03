@@ -1,4 +1,27 @@
-// GanDash - Personal Knowledge Manager Frontend
+// GanDash - Personal Knowledge Manager Frontend v0.3.6
+console.log('=== GanDash v0.3.6 Loading ===');
+console.log('Timestamp:', Date.now());
+console.log('SortableJS available:', typeof Sortable);
+
+// Update debug info
+if (document.getElementById('js-version')) {
+    document.getElementById('js-version').textContent = '0.3.6';
+}
+
+if (typeof Sortable === 'undefined') {
+    console.error('ERROR: SortableJS failed to load! Using cached version.');
+    alert('ERROR: SortableJS failed to load! The app is using an old cached version. Click "FORCE UPDATE" button.');
+    if (document.getElementById('cache-status')) {
+        document.getElementById('cache-status').textContent = 'STALE!';
+        document.getElementById('cache-status').style.background = 'red';
+    }
+} else {
+    console.log('✅ SortableJS loaded successfully');
+    if (document.getElementById('cache-status')) {
+        document.getElementById('cache-status').textContent = 'OK';
+    }
+}
+
 const API_URL = window.location.origin + '/api';
 
 // Pincode configuration
@@ -1351,11 +1374,19 @@ class Dash {
     
     // Populate filter dropdowns
     populateFilterSelects() {
+        console.log('=== Populating Filter Selects ===');
+        console.log('Projects:', this.projects.length, this.projects);
+        console.log('People:', this.people.length, this.people);
+        console.log('Labels:', this.tags.length, this.tags);
+        
         // Project filter
         const projectSelect = document.getElementById('filter-project');
         if (projectSelect) {
             projectSelect.innerHTML = `<option value="">All Projects</option>` +
                 this.projects.map(p => `<option value="${p.id}">${this.escapeHtml(p.name)}</option>`).join('');
+            console.log('✅ Project filter populated:', projectSelect.options.length, 'options');
+        } else {
+            console.error('❌ #filter-project element not found');
         }
         
         // Assignee filter
@@ -1363,6 +1394,9 @@ class Dash {
         if (assigneeSelect) {
             assigneeSelect.innerHTML = `<option value="">All Assignees</option>` +
                 this.people.map(p => `<option value="${p.id}">${this.escapeHtml(p.name)}</option>`).join('');
+            console.log('✅ Assignee filter populated:', assigneeSelect.options.length, 'options');
+        } else {
+            console.error('❌ #filter-assignee element not found');
         }
         
         // Label filter
@@ -1370,7 +1404,12 @@ class Dash {
         if (labelSelect) {
             labelSelect.innerHTML = `<option value="">All Labels</option>` +
                 this.tags.map(t => `<option value="${t.id}">${this.escapeHtml(t.name)}</option>`).join('');
+            console.log('✅ Label filter populated:', labelSelect.options.length, 'options');
+        } else {
+            console.error('❌ #filter-label element not found');
         }
+        
+        console.log('=== Filter Selects Population Complete ===');
     }
 
     // Detail Panel (View Mode)

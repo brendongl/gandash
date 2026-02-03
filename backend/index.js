@@ -27,6 +27,19 @@ const PORT = process.env.PORT || 3002;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// ==================== NUCLEAR CACHE BUSTING v0.3.6 ====================
+// Add cache-busting headers for critical files to prevent PWA caching issues
+app.use(['/app.js', '/style.css', '/index.html', '/sw.js'], (req, res, next) => {
+    console.log('[Cache-Bust] Serving:', req.path);
+    res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+    });
+    next();
+});
+
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Health check

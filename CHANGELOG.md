@@ -2,6 +2,91 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.3.6] - 2026-02-03
+
+### 🔥 BREAKING: Nuclear PWA Cache Fix
+
+**⚠️ USERS MUST UNINSTALL AND REINSTALL PWA** - This version implements nuclear cache-busting measures to fix persistent caching issues.
+
+### Fixed - CRITICAL
+- **Service Worker Aggressive Caching** 🐛
+  - Root cause: PWA serving cached v0.3.4 or earlier despite version badge showing v0.3.5
+  - SortableJS not loading (dotted blue borders during drag)
+  - Filter dropdowns empty (no projects/labels/assignees)
+  - Sort dropdown empty (no options)
+  
+### Added - Nuclear Cache Busting Measures
+- **Timestamp-Based Cache Names**: Service worker now uses `Date.now()` instead of version numbers
+  - Forces cache invalidation on every deployment
+  - Prevents stale cache persistence
+  
+- **Backend Cache-Busting Headers**: Added middleware to serve critical files with no-cache headers
+  - Files: `/app.js`, `/style.css`, `/index.html`, `/sw.js`
+  - Headers: `Cache-Control: no-cache, no-store, must-revalidate, max-age=0`
+  
+- **Force SW Update on Every Load**: Enhanced service worker registration
+  - `updateViaCache: 'none'` - never cache the service worker itself
+  - `controllerchange` listener forces immediate reload on SW update
+  
+- **Visible Debug Info**: Red debug banner at top-right showing:
+  - SW version (should show 0.3.6)
+  - JS version (should show 0.3.6)
+  - Cache status (OK/STALE/number of caches)
+  - Red background indicates debug mode active
+  
+- **Force Update Button**: Red button at bottom-right
+  - Unregisters all service workers
+  - Clears all caches (Cache API)
+  - Clears localStorage
+  - Hard reloads with timestamp query string
+  - Emergency fix if PWA still broken
+  
+- **Comprehensive Logging**: Console logs for debugging
+  - SortableJS availability check at app start
+  - Alert if SortableJS fails to load (indicates cached version)
+  - Filter population logs (projects, labels, people counts)
+  - Service worker cache names logged
+  - Cache-busting middleware logs in backend
+
+### Testing Instructions
+1. **Deploy v0.3.6** to production
+2. **UNINSTALL PWA** completely from device
+3. **Clear browser data** for gandash.ganle.xyz (Settings → Privacy → Clear Data)
+4. **REINSTALL PWA** fresh (visit site, click "Install App")
+5. **Verify debug info** shows:
+   - SW: 0.3.6
+   - JS: 0.3.6
+   - Cache: OK
+6. **Test features**:
+   - Drag tasks in kanban (should be smooth, no dotted borders)
+   - Check sort dropdown (should have 4 options)
+   - Check filter dropdowns (should be populated)
+7. **Check console** for:
+   - `=== GanDash v0.3.6 Loading ===`
+   - `✅ SortableJS loaded successfully`
+   - `=== Populating Filter Selects ===`
+
+### Removed (After Verification)
+- Debug info div can be removed once verified working
+- Force update button can be hidden once PWA stable
+- Console logs can be reduced to errors only
+
+### Technical Details
+**Why this was so hard to fix:**
+- Service worker caching strategy was too aggressive
+- CDN-loaded SortableJS wasn't being re-fetched
+- Cache-first strategy served stale app.js even after updates
+- Version badge updated but actual code didn't
+- Browser/PWA update mechanisms insufficient without cache invalidation
+
+**Solution:**
+1. Timestamp-based cache names force invalidation
+2. Backend serves critical files with no-cache headers
+3. Service worker never caches itself (`updateViaCache: 'none'`)
+4. Immediate reload on controller change
+5. Debug tools for verification
+6. Emergency "force update" button for users
+
 ## [0.3.5] - 2026-02-03
 
 ### Fixed
