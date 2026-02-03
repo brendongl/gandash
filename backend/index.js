@@ -71,6 +71,7 @@ app.get('/api/tasks', async (req, res) => {
             dueDate: t['Due Date'] || null,
             dueTime: t['Due Time'] || null,
             projectId: t['Project ID'] || null,
+            labelId: t['Label ID'] || null,
             completedAt: t['Completed At'] || null,
             createdAt: t['Created At'] || t.CreatedAt,
             recurrenceRule: t['Recurrence Rule'] || null,
@@ -211,6 +212,7 @@ app.post('/api/tasks', async (req, res) => {
             'Priority': req.body.priority || 4,
             'Due Date': req.body.dueDate || null,
             'Project ID': req.body.projectId || null,
+            'Label ID': req.body.labelId || null,
             'Assignee ID': req.body.assigneeId || null,
             'Created At': new Date().toISOString(),
             'Recurrence Rule': req.body.recurrenceRule || null,
@@ -242,6 +244,7 @@ app.patch('/api/tasks/:id', async (req, res) => {
         if (req.body.dueDate !== undefined) data['Due Date'] = req.body.dueDate;
         if (req.body.dueTime !== undefined) data['Due Time'] = req.body.dueTime;
         if (req.body.projectId !== undefined) data['Project ID'] = req.body.projectId;
+        if (req.body.labelId !== undefined) data['Label ID'] = req.body.labelId;
         if (req.body.completedAt !== undefined) data['Completed At'] = req.body.completedAt;
         if (req.body.recurrenceRule !== undefined) data['Recurrence Rule'] = req.body.recurrenceRule;
         if (req.body.recurrenceBase !== undefined) data['Recurrence Base'] = req.body.recurrenceBase;

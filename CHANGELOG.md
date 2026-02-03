@@ -2,6 +2,38 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.2.7] - 2026-02-03
+
+### Fixed
+- **List View Priority Column**: Removed separate Priority column, moved priority emoji inline with task title
+  - Priority now shows as colored emoji (🔴 P1, 🟠 P2, 🟡 P3, ⚪ P4) before task title
+  - Cleaner table layout with fewer columns
+  - Priority emoji appears before recurring icon (if present)
+- **Label System FIXED**: Labels now actually work!
+  - Root cause: Tasks table in NocoDB was missing "Label ID" field entirely
+  - Added "Label ID" field to Tasks table in NocoDB
+  - Updated backend to read/write labelId from tasks
+  - Label filter and assignment now work correctly
+  - Labels now display in List view
+  - Can now assign labels when creating/editing tasks
+
+### Changed
+- List view table header updated: removed Priority column
+- Task title cell now includes priority emoji for visual priority indication
+
+### Technical Details
+The label system was completely broken because:
+1. Frontend expected tasks to have `labelId` field
+2. Backend wasn't reading/writing it (field didn't exist)
+3. NocoDB Tasks table had no "Label ID" column
+4. Added the missing field via NocoDB API
+5. Updated backend GET /api/tasks to include `labelId: t['Label ID'] || null`
+6. Updated backend POST /api/tasks to write `'Label ID': req.body.labelId || null`
+7. Updated backend PATCH /api/tasks to handle `labelId` updates
+8. Frontend already had correct code to send labelId - it just wasn't being saved
+
+---
+
 ## [0.2.6] - 2026-02-03
 
 ### Fixed

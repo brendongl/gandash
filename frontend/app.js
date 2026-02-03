@@ -1065,7 +1065,8 @@ class Dash {
         const label = this.tags.find(t => t.id === task.labelId);
         const isCompleted = task.status === 'completed' || task.status === 'done';
         const priorityClass = `p${task.priority || 4}`;
-        const priorityLabels = { 1: 'P1 - Urgent', 2: 'P2 - High', 3: 'P3 - Medium', 4: 'P4 - Low' };
+        const priorityEmojis = { 1: '🔴', 2: '🟠', 3: '🟡', 4: '⚪' };
+        const priorityEmoji = priorityEmojis[task.priority || 4];
         
         // Calculate display date for recurring tasks
         let displayDate = task.dueDate;
@@ -1087,18 +1088,14 @@ class Dash {
                 </td>
                 <td>
                     <div class="table-task-cell">
-                        <div class="table-task-title">${task.recurrenceRule ? '🔄 ' : ''}${this.escapeHtml(task.title)}</div>
+                        <div class="table-task-title">
+                            ${priorityEmoji} ${task.recurrenceRule ? '🔄 ' : ''}${this.escapeHtml(task.title)}
+                        </div>
                         ${task.description ? `<div class="table-task-description">${this.escapeHtml(task.description)}</div>` : ''}
                     </div>
                 </td>
                 <td>
                     ${displayDate ? `<div class="table-due-date ${dueClass}"><i class="fas fa-calendar"></i> ${this.formatDate(displayDate)}</div>` : '<span style="color: var(--text-muted)">No date</span>'}
-                </td>
-                <td>
-                    <div class="table-priority">
-                        <span class="priority-dot ${priorityClass}"></span>
-                        ${priorityLabels[task.priority || 4]}
-                    </div>
                 </td>
                 <td>
                     ${project ? `<div class="table-project"><span class="color-dot" style="background:${project.color}"></span> ${this.escapeHtml(project.name)}</div>` : '<span style="color: var(--text-muted)">None</span>'}
