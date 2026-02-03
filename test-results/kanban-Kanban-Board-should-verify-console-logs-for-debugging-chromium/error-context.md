@@ -1,0 +1,143 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - text:   
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]: 
+          - generic [ref=e7]: GanDash
+          - generic [ref=e8] [cursor=pointer]: v0.3.4
+        - generic [ref=e11]: Akubot is idle
+      - navigation [ref=e12]:
+        - generic [ref=e13] [cursor=pointer]:
+          - generic: 
+          - generic [ref=e14]: Tasks
+        - generic [ref=e15] [cursor=pointer]:
+          - generic: 
+          - generic [ref=e16]: Calendar
+      - text:      
+      - navigation [ref=e18]:
+        - generic [ref=e19]:
+          - link " All" [ref=e20] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e21]: 
+            - generic [ref=e22]: All
+          - link " Today 2" [ref=e23] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e24]: 
+            - generic [ref=e25]: Today
+            - generic [ref=e26]: "2"
+          - generic [ref=e27]:
+            - link " Upcoming " [ref=e28] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=e29]: 
+              - generic [ref=e30]: Upcoming
+              - generic [ref=e31]: 
+            - generic:
+              - link "Work" [ref=e32] [cursor=pointer]:
+                - /url: "#"
+                - generic [ref=e34]: Work
+              - link "Sip n Play" [ref=e35] [cursor=pointer]:
+                - /url: "#"
+                - generic [ref=e37]: Sip n Play
+              - link "Home" [ref=e38] [cursor=pointer]:
+                - /url: "#"
+                - generic [ref=e40]: Home
+              - link "Sipflix" [ref=e41] [cursor=pointer]:
+                - /url: "#"
+                - generic [ref=e43]: Sipflix
+              - link "SNP-Site" [ref=e44] [cursor=pointer]:
+                - /url: "#"
+                - generic [ref=e46]: SNP-Site
+          - link " Recurring" [ref=e47] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e48]: 
+            - generic [ref=e49]: Recurring
+          - link " Completed" [ref=e50] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e51]: 
+            - generic [ref=e52]: Completed
+          - link " Reminders" [ref=e53] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e54]: 
+            - generic [ref=e55]: Reminders
+        - generic [ref=e57]:
+          - generic [ref=e59]: Quick Links
+          - link " Links" [ref=e60] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e61]: 
+            - generic [ref=e62]: Links
+      - button "" [ref=e64] [cursor=pointer]:
+        - generic [ref=e65]: 
+    - main [ref=e66]:
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - text: 
+          - heading "Today" [level=2] [ref=e69]
+          - generic [ref=e70]: 2 tasks
+        - generic [ref=e71]:
+          - generic [ref=e72]:
+            - generic [ref=e73]: 
+            - textbox "Search tasks..." [ref=e74]
+          - text:     
+          - generic [ref=e75]:
+            - button "" [ref=e76] [cursor=pointer]:
+              - generic [ref=e77]: 
+            - button "" [ref=e78] [cursor=pointer]:
+              - generic [ref=e79]: 
+          - generic [ref=e80]:
+            - button "" [ref=e81] [cursor=pointer]:
+              - generic [ref=e82]: 
+            - text:    
+          - button "" [ref=e84] [cursor=pointer]:
+            - generic [ref=e85]: 
+      - text:     +  +     +
+      - generic [ref=e86]:
+        - text: 
+        - generic [ref=e88]:
+          - generic [ref=e89]:
+            - generic [ref=e90]:
+              - heading "To Do" [level=3] [ref=e91]
+              - generic [ref=e92]: "2"
+            - generic [ref=e93]:
+              - generic [ref=e94]:
+                - button [ref=e95] [cursor=pointer]
+                - generic [ref=e96]:
+                  - generic [ref=e97]: fix game knowledge bug
+                  - generic [ref=e98]:
+                    - generic [ref=e99]:
+                      - generic [ref=e100]: 
+                      - text: Today
+                    - generic [ref=e101]: Sip n Play
+                    - generic [ref=e103]:
+                      - generic [ref=e104]: 
+                      - text: Brendon
+              - generic [ref=e105]:
+                - button [ref=e106] [cursor=pointer]
+                - generic [ref=e107]:
+                  - generic [ref=e108]: monthy leaderboard hour weight
+                  - generic [ref=e109]:
+                    - generic [ref=e110]:
+                      - generic [ref=e111]: 
+                      - text: Today
+                    - generic [ref=e112]: SNP-Site
+                    - generic [ref=e114]:
+                      - generic [ref=e115]: 
+                      - text: Brendon
+          - generic [ref=e117]:
+            - heading "In Progress" [level=3] [ref=e118]
+            - generic [ref=e119]: "0"
+          - generic [ref=e122]:
+            - heading "Complete" [level=3] [ref=e123]
+            - generic [ref=e124]: "0"
+        - text: 
+      - text: 
+      - button "+" [ref=e126] [cursor=pointer]:
+        - generic [ref=e127]: +
+      - text: +
+    - text:             
+  - text:                  
+```

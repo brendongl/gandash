@@ -852,7 +852,7 @@ class Dash {
         const taskCount = document.getElementById('task-count');
         const filtered = this.getFilteredTasks();
 
-        if (!kanbanContainer) return; // Guard against missing elements
+        if (!kanbanContainer) return;
         if (taskCount) taskCount.textContent = `${filtered.length} task${filtered.length !== 1 ? 's' : ''}`;
 
         if (filtered.length === 0) {
@@ -926,14 +926,11 @@ class Dash {
     setupDragAndDrop() {
         const columns = document.querySelectorAll('.kanban-tasks');
         
-        // Dynamically import SortableJS from CDN if not already loaded
-        if (typeof Sortable === 'undefined') {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js';
-            script.onload = () => this.initSortable(columns);
-            document.head.appendChild(script);
-        } else {
+        // SortableJS is loaded via HTML script tag
+        if (typeof Sortable !== 'undefined') {
             this.initSortable(columns);
+        } else {
+            console.error('SortableJS not loaded!');
         }
     }
     
@@ -942,6 +939,7 @@ class Dash {
             new Sortable(column, {
                 group: 'kanban',
                 animation: 150,
+                emptyInsertThreshold: 50, // Allow dropping in empty columns
                 ghostClass: 'sortable-ghost',
                 dragClass: 'sortable-drag',
                 onEnd: (evt) => {
