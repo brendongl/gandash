@@ -2,6 +2,23 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.3.3] - 2026-02-03
+
+### Fixed
+- **PWA Update Mechanism** 🔄
+  - Fixed version badge click not properly updating PWA
+  - Replaced `window.location.reload(true)` with proper PWA update flow
+  - Now properly unregisters service worker before reload
+  - Clears all caches before forcing update
+  - Added cache bypass query string to ensure fresh load
+  - Updated service worker to v0.3.3 with better logging
+  - Improved `skipWaiting()` and `clients.claim()` behavior
+  - PWA now properly updates when clicking version badge
+
+### Changed
+- Enhanced service worker version tracking
+- Improved update process user feedback
+
 ## [0.3.2] - 2026-02-03
 
 ### Fixed - Critical PWA Bugs 🐛

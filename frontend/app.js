@@ -1977,19 +1977,33 @@ class Dash {
 
     // Event Binding
     bindEvents() {
-        // Version badge click for hard refresh
-        document.getElementById('version-badge')?.addEventListener('click', () => {
-            if (confirm('Force reload GanDash? This will clear the cache and refresh the page.')) {
-                // Clear service worker cache if exists
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.getRegistrations().then(registrations => {
+        // Version badge click for PWA update
+        document.getElementById('version-badge')?.addEventListener('click', async () => {
+            if (confirm('Update to latest version? This will reload the app.')) {
+                try {
+                    // 1. Unregister service worker
+                    if ('serviceWorker' in navigator) {
+                        const registrations = await navigator.serviceWorker.getRegistrations();
                         for (let registration of registrations) {
-                            registration.unregister();
+                            await registration.unregister();
                         }
-                    });
+                    }
+                    
+                    // 2. Clear all caches
+                    if ('caches' in window) {
+                        const cacheNames = await caches.keys();
+                        await Promise.all(
+                            cacheNames.map(cacheName => caches.delete(cacheName))
+                        );
+                    }
+                    
+                    // 3. Force reload with cache bypass
+                    window.location.href = window.location.href + '?v=' + Date.now();
+                } catch (error) {
+                    console.error('Update failed:', error);
+                    // Fallback to simple reload
+                    window.location.reload();
                 }
-                // Clear cache and reload
-                window.location.reload(true);
             }
         });
         
