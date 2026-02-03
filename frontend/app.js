@@ -2179,12 +2179,16 @@ class Dash {
         // ==================== CALENDAR EVENT HANDLERS ====================
         
         // Module switching
-        document.querySelectorAll('.module-item').forEach(el => {
-            el.addEventListener('click', () => {
-                const module = el.dataset.module;
-                this.switchModule(module);
+        var self = this;
+        document.querySelectorAll('.module-item').forEach(function(el) {
+            el.addEventListener('click', function() {
+                console.log('Module item clicked:', el.dataset.module);
+                var module = el.dataset.module;
+                console.log('Calling switchModule with:', module);
+                self.switchModule(module);
             });
         });
+        console.log('Module event listeners bound');
         
         // Calendar view toggle (week/month)
         document.querySelectorAll('[data-calendar-view]').forEach(btn => {
@@ -2295,14 +2299,18 @@ class Dash {
     // ==================== CALENDAR METHODS ====================
     
     switchModule(module) {
+        console.log('switchModule() called with module:', module);
         this.currentModule = module;
         
         // Update active state
-        document.querySelectorAll('.module-item').forEach(el => {
+        document.querySelectorAll('.module-item').forEach(function(el) {
             el.classList.toggle('active', el.dataset.module === module);
         });
         
+        console.log('Module active states updated');
+        
         if (module === 'tasks') {
+            console.log('Switching to tasks module');
             // Show tasks UI
             document.getElementById('tasks-nav').classList.remove('hidden');
             document.getElementById('calendar-nav').classList.add('hidden');
@@ -2315,18 +2323,49 @@ class Dash {
             document.getElementById('fab-add-event').classList.add('hidden');
             this.renderTasks();
         } else if (module === 'calendar') {
-            // Show calendar UI
-            document.getElementById('tasks-nav').classList.add('hidden');
-            document.getElementById('calendar-nav').classList.remove('hidden');
-            document.querySelector('.tasks-container').classList.add('hidden');
-            document.getElementById('calendar-container').classList.remove('hidden');
-            document.getElementById('view-toggle').classList.add('hidden');
-            document.getElementById('calendar-view-toggle').classList.remove('hidden');
-            document.getElementById('calendar-controls').classList.remove('hidden');
-            document.getElementById('fab-add-task').classList.add('hidden');
-            document.getElementById('fab-add-event').classList.remove('hidden');
-            document.getElementById('view-title').textContent = 'Calendar';
-            this.loadCalendarData();
+            console.log('Switching to calendar module');
+            try {
+                // Show calendar UI
+                var tasksNav = document.getElementById('tasks-nav');
+                var calendarNav = document.getElementById('calendar-nav');
+                var tasksContainer = document.querySelector('.tasks-container');
+                var calendarContainer = document.getElementById('calendar-container');
+                var viewToggle = document.getElementById('view-toggle');
+                var calendarViewToggle = document.getElementById('calendar-view-toggle');
+                var calendarControls = document.getElementById('calendar-controls');
+                var fabAddTask = document.getElementById('fab-add-task');
+                var fabAddEvent = document.getElementById('fab-add-event');
+                var viewTitle = document.getElementById('view-title');
+                
+                console.log('Calendar elements found:', {
+                    tasksNav: !!tasksNav,
+                    calendarNav: !!calendarNav,
+                    tasksContainer: !!tasksContainer,
+                    calendarContainer: !!calendarContainer,
+                    viewToggle: !!viewToggle,
+                    calendarViewToggle: !!calendarViewToggle,
+                    calendarControls: !!calendarControls,
+                    fabAddTask: !!fabAddTask,
+                    fabAddEvent: !!fabAddEvent,
+                    viewTitle: !!viewTitle
+                });
+                
+                if (tasksNav) tasksNav.classList.add('hidden');
+                if (calendarNav) calendarNav.classList.remove('hidden');
+                if (tasksContainer) tasksContainer.classList.add('hidden');
+                if (calendarContainer) calendarContainer.classList.remove('hidden');
+                if (viewToggle) viewToggle.classList.add('hidden');
+                if (calendarViewToggle) calendarViewToggle.classList.remove('hidden');
+                if (calendarControls) calendarControls.classList.remove('hidden');
+                if (fabAddTask) fabAddTask.classList.add('hidden');
+                if (fabAddEvent) fabAddEvent.classList.remove('hidden');
+                if (viewTitle) viewTitle.textContent = 'Calendar';
+                
+                console.log('Calendar UI updated, loading data...');
+                this.loadCalendarData();
+            } catch (error) {
+                console.error('Error switching to calendar module:', error);
+            }
         }
     }
     

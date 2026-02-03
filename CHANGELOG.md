@@ -2,6 +2,39 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.3.1] - 2026-02-03
+
+### Fixed
+- **Calendar Module Browser Compatibility** 🔧
+  - Fixed calendar module not working on Chrome mobile and Firefox desktop
+  - Converted arrow functions to regular functions in module switching code
+  - Added defensive null checks for all DOM elements
+  - Added comprehensive console logging for debugging
+  - Fixed event listener binding compatibility issues
+
+### Added
+- **PWA Support** 📱
+  - Added `manifest.json` with full PWA configuration
+  - Created service worker (`sw.js`) with:
+    - Cache-first strategy for static assets (app.js, style.css, index.html)
+    - Network-first strategy for API calls with cache fallback
+    - Offline support with graceful degradation
+    - Auto-cleanup of old caches on update
+  - Service worker registration in HTML with auto-update check
+  - Generated app icons (72x72 to 512x512) in SVG format
+  - Apple Touch Icon support for iOS devices
+  - Apple mobile web app meta tags
+  - MS Tile configuration
+  - Theme color configuration (#6366f1 - indigo)
+  - App is now installable on:
+    - Desktop Chrome/Edge (Windows, macOS, Linux)
+    - Mobile Chrome/Safari (Android, iOS)
+    - Can be added to home screen and run as standalone app
+
+### Changed
+- Improved error handling in module switching code
+- Version bumped to 0.3.1
+
 ## [0.3.0] - 2026-02-03
 
 ### Added - MAJOR FEATURE: Calendar Module 📅

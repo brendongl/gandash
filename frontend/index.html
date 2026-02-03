@@ -4,6 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>GanDash</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#6366f1">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.svg">
+    <link rel="apple-touch-icon" sizes="72x72" href="/icons/icon-72x72.svg">
+    <link rel="apple-touch-icon" sizes="96x96" href="/icons/icon-96x96.svg">
+    <link rel="apple-touch-icon" sizes="128x128" href="/icons/icon-128x128.svg">
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.svg">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.svg">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.svg">
+    <link rel="apple-touch-icon" sizes="384x384" href="/icons/icon-384x384.svg">
+    <link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512x512.svg">
+    
+    <!-- Apple Mobile Web App -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GanDash">
+    
+    <!-- MS Tile -->
+    <meta name="msapplication-TileColor" content="#6366f1">
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+    
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -54,7 +81,7 @@
                 <div class="logo">
                     <i class="fas fa-cube"></i>
                     <span>GanDash</span>
-                    <span class="version-badge" id="version-badge">v0.3.0</span>
+                    <span class="version-badge" id="version-badge">v0.3.1</span>
                 </div>
                 <div class="akubot-status" id="akubot-status">
                     <span class="status-dot idle" id="status-dot"></span>
@@ -836,5 +863,26 @@
     <div class="toast-container" id="toast-container"></div>
 
     <script src="app.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        // Register service worker for PWA support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('[PWA] Service Worker registered:', registration.scope);
+                        
+                        // Check for updates periodically
+                        setInterval(() => {
+                            registration.update();
+                        }, 60000); // Check every minute
+                    })
+                    .catch((error) => {
+                        console.error('[PWA] Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
