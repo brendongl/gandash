@@ -942,6 +942,8 @@ class Dash {
             
             card.addEventListener('dragend', (e) => {
                 card.classList.remove('dragging');
+                // Remove drag-over from all columns on dragend
+                columns.forEach(col => col.classList.remove('drag-over'));
             });
         });
         
@@ -952,6 +954,8 @@ class Dash {
                 e.dataTransfer.dropEffect = 'move';
                 
                 const draggingCard = document.querySelector('.dragging');
+                if (!draggingCard) return;
+                
                 const afterElement = this.getDragAfterElement(column, e.clientY);
                 
                 if (afterElement == null) {
@@ -969,6 +973,10 @@ class Dash {
                 const newStatus = column.dataset.status;
                 const taskId = parseInt(draggingCard.dataset.id);
                 
+                // Remove drag-over class on drop
+                column.classList.remove('drag-over');
+                columns.forEach(col => col.classList.remove('drag-over'));
+                
                 // Update task status
                 this.updateTaskStatus(taskId, newStatus);
             });
@@ -979,7 +987,12 @@ class Dash {
             });
             
             column.addEventListener('dragleave', (e) => {
-                if (e.target === column) {
+                // Only remove if we're actually leaving the column container
+                const rect = column.getBoundingClientRect();
+                const x = e.clientX;
+                const y = e.clientY;
+                
+                if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
                     column.classList.remove('drag-over');
                 }
             });
@@ -2022,17 +2035,22 @@ class Dash {
         // Floating Action Button
         document.getElementById('fab-add-task')?.addEventListener('click', () => this.showTaskForm());
         
-        // Sort dropdown
+        // Sort dropdown - PWA FIX: preventDefault
         document.getElementById('sort-btn')?.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
             this.toggleDropdown('sort-menu');
         });
         document.querySelectorAll('#sort-menu .dropdown-item').forEach(item => {
-            item.addEventListener('click', () => this.setSort(item.dataset.sort));
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.setSort(item.dataset.sort);
+            });
         });
         
-        // Filter dropdown
+        // Filter dropdown - PWA FIX: preventDefault
         document.getElementById('filter-btn')?.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
             this.toggleDropdown('filter-menu');
         });
@@ -2059,12 +2077,24 @@ class Dash {
             this.renderTasks();
         });
         
-        // View toggle (Kanban/List)
+        // View toggle (Kanban/List) - PWA FIX: preventDefault and explicit handling
         document.querySelectorAll('.view-toggle-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
+            const handleViewToggle = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('View toggle clicked:', btn.dataset.displayMode);
                 const mode = btn.dataset.displayMode;
-                this.setDisplayMode(mode);
-            });
+                if (mode) {
+                    this.setDisplayMode(mode);
+                }
+            };
+            
+            btn.addEventListener('click', handleViewToggle);
+            // Also bind to touchend for better PWA support
+            btn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                handleViewToggle(e);
+            }, { passive: false });
         });
         
         // Close dropdowns when clicking outside
@@ -2178,15 +2208,24 @@ class Dash {
         
         // ==================== CALENDAR EVENT HANDLERS ====================
         
-        // Module switching
+        // Module switching - PWA FIX: preventDefault and use touch events
         var self = this;
         document.querySelectorAll('.module-item').forEach(function(el) {
-            el.addEventListener('click', function() {
+            // Use both click and touchend for better PWA support
+            const handleModuleClick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
                 console.log('Module item clicked:', el.dataset.module);
                 var module = el.dataset.module;
                 console.log('Calling switchModule with:', module);
                 self.switchModule(module);
-            });
+            };
+            
+            el.addEventListener('click', handleModuleClick);
+            el.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                handleModuleClick(e);
+            }, { passive: false });
         });
         console.log('Module event listeners bound');
         

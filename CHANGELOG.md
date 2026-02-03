@@ -2,6 +2,51 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.3.2] - 2026-02-03
+
+### Fixed - Critical PWA Bugs 🐛
+- **Calendar Module Not Clickable in PWA** ✅
+  - Added `preventDefault()` and `stopPropagation()` to module item click handlers
+  - Added touchend event listeners for better PWA touch support
+  - Fixed pointer-events CSS to ensure clickability in standalone mode
+  - Added user-select and tap-highlight CSS for better touch UX
+  
+- **Filter Buttons Broken in PWA** ✅
+  - Added `preventDefault()` to filter dropdown button click handler
+  - Fixed z-index and display issues with dropdown menus in PWA
+  - Added `pointer-events: auto` to ensure dropdowns are clickable
+  - Added `!important` to display:block for show state
+  
+- **View Toggle Not Working in PWA** ✅
+  - Added `preventDefault()` and `stopPropagation()` to view toggle buttons
+  - Added touchend event listeners for better touch response
+  - Fixed pointer-events and touch-action CSS properties
+  - Added logging for debugging view toggle clicks
+  
+- **Kanban Columns Stacked Vertically on Mobile** ✅
+  - Changed mobile kanban from vertical stack to horizontal scroll
+  - CSS fix: `display: flex` with `overflow-x: auto` on .kanban-board
+  - Set `.kanban-column` to `min-width: 280px` and `flex-shrink: 0`
+  - Added smooth scrolling with `-webkit-overflow-scrolling: touch`
+  - Added scroll-snap for better UX on mobile
+  
+- **Dotted Border Persists After Drag** ✅
+  - Fixed drag-over class removal in drag and drop handlers
+  - Remove .drag-over on both `dragend` and `drop` events
+  - Improved dragleave detection using getBoundingClientRect()
+  - Ensures border clears properly after every drag operation
+  
+- **Cannot Drag to Empty Kanban Column** ✅
+  - Added `min-height: 100px` to `.kanban-tasks` containers
+  - Added padding to ensure drop zone is visible when empty
+  - Improved drag-over visual feedback for empty columns
+  - Fixed drop event handling to work with empty containers
+
+### Changed
+- Version bumped to 0.3.2
+- Improved PWA event handling throughout the app
+- Enhanced touch interactions for mobile/PWA use
+
 ## [0.3.1] - 2026-02-03
 
 ### Fixed

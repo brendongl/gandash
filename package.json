@@ -1,6 +1,6 @@
 {
   "name": "gandash",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "GanDash - Task management with Discord integration and Calendar",
   "main": "backend/index.js",
   "scripts": {

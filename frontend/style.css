@@ -166,11 +166,15 @@ body {
     cursor: pointer;
     transition: var(--transition);
     position: relative;
+    pointer-events: auto; /* PWA FIX: Ensure clickable */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .module-item:hover { background: rgba(255,255,255,0.1); }
 .module-item.active { background: var(--accent-color); color: white; }
-.module-item i { width: 20px; text-align: center; }
+.module-item i { width: 20px; text-align: center; pointer-events: none; }
 
 .coming-soon {
     margin-left: auto;
@@ -1471,11 +1475,14 @@ input[type="time"].small-input {
     z-index: 200;
     display: none;
     padding: 8px 0;
+    pointer-events: auto; /* PWA FIX: Ensure dropdown is clickable */
 }
 
 .dropdown-menu.show {
-    display: block;
+    display: block !important; /* PWA FIX: Force display */
     animation: dropdownFadeIn 0.15s ease;
+    visibility: visible;
+    opacity: 1;
 }
 
 @keyframes dropdownFadeIn {
@@ -2083,6 +2090,11 @@ input[type="time"].small-input {
     cursor: pointer;
     transition: var(--transition);
     font-size: 16px;
+    pointer-events: auto; /* PWA FIX: Ensure clickable */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation; /* PWA FIX: Improve touch response */
 }
 
 .view-toggle-btn:hover {
@@ -2322,6 +2334,8 @@ input[type="time"].small-input {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    min-height: 100px; /* Ensure drop zone exists even when empty */
+    padding: 4px;
 }
 
 .kanban-tasks .task-item {
@@ -2349,17 +2363,22 @@ input[type="time"].small-input {
     border-radius: var(--radius-md);
 }
 
-/* Mobile Kanban */
+/* Mobile Kanban - HORIZONTAL SCROLL FIX */
 @media (max-width: 768px) {
     .kanban-board {
-        grid-template-columns: 1fr;
-        gap: 16px;
+        display: flex;
+        overflow-x: auto;
+        gap: 12px;
         padding: 16px;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
     }
     
     .kanban-column {
-        min-width: unset;
-        max-height: 400px;
+        min-width: 280px;
+        flex-shrink: 0;
+        max-height: calc(100vh - 200px);
+        scroll-snap-align: start;
     }
 }
 
