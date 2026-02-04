@@ -890,6 +890,22 @@ body {
     visibility: visible;
 }
 
+/* Dropdown backdrop for mobile */
+.dropdown-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+}
+
+.dropdown-backdrop.show {
+    display: block;
+}
+
 /* Mobile breakpoint */
 @media (max-width: 768px) {
     /* Sidebar */
@@ -1472,7 +1488,7 @@ input[type="time"].small-input {
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     min-width: 180px;
-    z-index: 200;
+    z-index: 9999 !important;
     display: none;
     padding: 8px 0;
     pointer-events: auto; /* PWA FIX: Ensure dropdown is clickable */
@@ -1481,7 +1497,7 @@ input[type="time"].small-input {
 .dropdown-menu.show {
     display: block !important; /* PWA FIX: Force display */
     animation: dropdownFadeIn 0.15s ease;
-    visibility: visible;
+    visibility: visible !important;
     opacity: 1;
 }
 

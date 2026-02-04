@@ -2,6 +2,30 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.4.1] - 2026-02-04
+
+### Added
+- **Dedicated Kanban View** 📊
+  - New "Kanban" sidebar item with dedicated board view
+  - Kanban is now separate from regular task views (Today, Upcoming, etc.)
+  - View toggle (Kanban ↔ List) only appears in Kanban view
+  - Other views (Today, Upcoming, Recurring, etc.) now show **list view only**
+  - Better separation of concerns between board and list workflows
+
+### Fixed
+- **Mobile Dropdown Issues** 📱
+  - Added touchend event listeners for Filter and Sort buttons
+  - Fixed z-index stacking (dropdowns now at z-index: 9999)
+  - Added mobile backdrop for better UX when dropdowns are open
+  - Lock body scroll when dropdown is open on mobile (prevent background scrolling)
+  - Improved visibility: `visibility: visible !important` for `.dropdown-menu.show`
+  - Better touch handling prevents click-through issues
+
+### Changed
+- View toggle buttons hidden when not in Kanban view
+- Display mode is now tied to view context (Kanban allows toggle, others don't)
+- Improved mobile dropdown behavior with backdrop overlay
+
 ## [0.4.0] - 2026-02-04
 
 ### 🔥 BREAKING: Removed PWA/Service Worker - Back to Standard Web App

@@ -825,6 +825,7 @@ class Dash {
     
     toggleDropdown(dropdownId) {
         const menu = document.getElementById(dropdownId);
+        const backdrop = document.getElementById('dropdown-backdrop');
         const isOpen = menu.classList.contains('show');
         
         // Close all dropdowns first
@@ -833,11 +834,23 @@ class Dash {
         // Toggle the clicked one
         if (!isOpen) {
             menu.classList.add('show');
+            
+            // On mobile, show backdrop and lock body scroll
+            if (window.innerWidth <= 768) {
+                if (backdrop) backdrop.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
         }
     }
     
     closeDropdowns() {
+        const backdrop = document.getElementById('dropdown-backdrop');
+        
         document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+        
+        // Hide backdrop and restore body scroll
+        if (backdrop) backdrop.classList.remove('show');
+        document.body.style.overflow = '';
     }
 
     // Rendering
@@ -1144,6 +1157,9 @@ class Dash {
     }
 
     setDisplayMode(mode) {
+        // Only allow mode toggle in Kanban view
+        if (this.currentView !== 'kanban') return;
+        
         this.displayMode = mode;
         localStorage.setItem('gandash_display_mode', mode);
         
@@ -1254,6 +1270,23 @@ class Dash {
     setView(view) {
         this.currentView = view;
         
+        // Handle Kanban view specially
+        const viewToggle = document.getElementById('view-toggle');
+        if (view === 'kanban') {
+            // Dedicated Kanban view - show all tasks in kanban mode
+            this.displayMode = 'kanban';
+            if (viewToggle) viewToggle.style.display = 'flex';
+            
+            // Update toggle button states
+            document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.displayMode === 'kanban');
+            });
+        } else {
+            // All other views: force list mode and hide toggle
+            this.displayMode = 'list';
+            if (viewToggle) viewToggle.style.display = 'none';
+        }
+        
         // Clear filters when switching views
         if (!view.startsWith('upcoming')) {
             this.filters.projectId = null;
@@ -1272,7 +1305,16 @@ class Dash {
             upcomingToggle.classList.toggle('active', view === 'upcoming' || view.startsWith('upcoming:'));
         }
 
-        const titles = { today: 'Today', upcoming: 'Upcoming', recurring: 'Recurring', completed: 'Completed', reminders: 'Reminders', links: 'Quick Links' };
+        const titles = { 
+            today: 'Today', 
+            upcoming: 'Upcoming', 
+            recurring: 'Recurring', 
+            completed: 'Completed', 
+            reminders: 'Reminders', 
+            links: 'Quick Links',
+            kanban: 'Kanban Board',
+            all: 'All Tasks'
+        };
         let title = titles[view];
         
         if (!title && view.startsWith('upcoming:')) {
@@ -2074,12 +2116,21 @@ class Dash {
         // Floating Action Button
         document.getElementById('fab-add-task')?.addEventListener('click', () => this.showTaskForm());
         
-        // Sort dropdown - PWA FIX: preventDefault
-        document.getElementById('sort-btn')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.toggleDropdown('sort-menu');
-        });
+        // Sort dropdown - PWA FIX: preventDefault + touchend for mobile
+        const sortBtn = document.getElementById('sort-btn');
+        if (sortBtn) {
+            const handleSortToggle = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleDropdown('sort-menu');
+            };
+            sortBtn.addEventListener('click', handleSortToggle);
+            sortBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleSortToggle(e);
+            });
+        }
         document.querySelectorAll('#sort-menu .dropdown-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -2087,12 +2138,21 @@ class Dash {
             });
         });
         
-        // Filter dropdown - PWA FIX: preventDefault
-        document.getElementById('filter-btn')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.toggleDropdown('filter-menu');
-        });
+        // Filter dropdown - PWA FIX: preventDefault + touchend for mobile
+        const filterBtn = document.getElementById('filter-btn');
+        if (filterBtn) {
+            const handleFilterToggle = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleDropdown('filter-menu');
+            };
+            filterBtn.addEventListener('click', handleFilterToggle);
+            filterBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleFilterToggle(e);
+            });
+        }
         document.getElementById('filter-show-completed')?.addEventListener('change', (e) => {
             this.toggleFilter('showCompleted', e.target.checked);
         });
@@ -2141,6 +2201,9 @@ class Dash {
         document.querySelectorAll('.dropdown-menu').forEach(menu => {
             menu.addEventListener('click', e => e.stopPropagation());
         });
+        
+        // Dropdown backdrop for mobile
+        document.getElementById('dropdown-backdrop')?.addEventListener('click', () => this.closeDropdowns());
         
         // Initialize filter UI
         this.initFilterUI();

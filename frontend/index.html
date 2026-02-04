@@ -50,6 +50,9 @@
     <!-- Mobile sidebar overlay -->
     <div class="sidebar-overlay hidden" id="sidebar-overlay"></div>
     
+    <!-- Dropdown backdrop for mobile -->
+    <div class="dropdown-backdrop" id="dropdown-backdrop"></div>
+    
     <div class="app hidden" id="app">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -57,7 +60,7 @@
                 <div class="logo">
                     <i class="fas fa-cube"></i>
                     <span>GanDash</span>
-                    <span class="version-badge" id="version-badge">v0.4.0</span>
+                    <span class="version-badge" id="version-badge">v0.4.1</span>
                 </div>
                 <div class="akubot-status" id="akubot-status">
                     <span class="status-dot idle" id="status-dot"></span>
@@ -115,6 +118,10 @@
                     <a href="#" class="nav-item" data-view="all">
                         <i class="fas fa-tasks"></i>
                         <span>All</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="kanban">
+                        <i class="fas fa-columns"></i>
+                        <span>Kanban</span>
                     </a>
                     <a href="#" class="nav-item active" data-view="today">
                         <i class="fas fa-sun"></i>
