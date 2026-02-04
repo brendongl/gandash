@@ -1,38 +1,8 @@
-// GanDash - Personal Knowledge Manager Frontend v0.3.7
-const GANDASH_VERSION = '0.3.7';
-window.GANDASH_VERSION = GANDASH_VERSION;
+// GanDash - Personal Knowledge Manager Frontend v0.4.0
+const GANDASH_VERSION = '0.4.0';
 
-console.log('=== GanDash v0.3.7 Loading ===');
-console.log('Timestamp:', Date.now());
-console.log('Version:', GANDASH_VERSION);
+console.log('=== GanDash v0.4.0 Loading ===');
 console.log('SortableJS available:', typeof Sortable);
-
-// Update debug info - with robust DOM check
-(function updateVersionBanner() {
-    const jsVerEl = document.getElementById('js-version');
-    if (jsVerEl) {
-        jsVerEl.textContent = GANDASH_VERSION;
-        console.log('✅ Version banner updated to', GANDASH_VERSION);
-    } else {
-        console.error('❌ js-version element not found in DOM!');
-        // Retry after DOM is fully ready
-        setTimeout(updateVersionBanner, 50);
-    }
-})();
-
-if (typeof Sortable === 'undefined') {
-    console.error('ERROR: SortableJS failed to load! Using cached version.');
-    alert('ERROR: SortableJS failed to load! The app is using an old cached version. Click "FORCE UPDATE" button.');
-    if (document.getElementById('cache-status')) {
-        document.getElementById('cache-status').textContent = 'STALE!';
-        document.getElementById('cache-status').style.background = 'red';
-    }
-} else {
-    console.log('✅ SortableJS loaded successfully');
-    if (document.getElementById('cache-status')) {
-        document.getElementById('cache-status').textContent = 'OK';
-    }
-}
 
 const API_URL = window.location.origin + '/api';
 

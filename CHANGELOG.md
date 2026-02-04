@@ -2,6 +2,47 @@
 
 All notable changes to GanDash will be documented in this file.
 
+## [0.4.0] - 2026-02-04
+
+### 🔥 BREAKING: Removed PWA/Service Worker - Back to Standard Web App
+
+**User Decision:** Remove ALL PWA functionality due to persistent caching issues that have plagued v0.3.x releases.
+
+### Removed
+- **Progressive Web App (PWA) Support**
+  - Deleted service worker (`sw.js`)
+  - Deleted PWA manifest (`manifest.json`)
+  - Deleted all app icons (`/icons/`)
+  - Removed PWA meta tags from HTML (theme-color, apple-mobile-web-app-*, etc.)
+  - Removed service worker registration script
+  - Removed debug banner showing SW/JS versions
+  - Removed "Force Update" button
+  - Removed cache-busting middleware from backend
+  
+### Benefits
+- ✅ No more caching issues - changes appear instantly on refresh
+- ✅ Simpler debugging - standard browser behavior
+- ✅ Faster iteration and deployment
+- ✅ No confusing version mismatches
+- ✅ Hard refresh always gets latest version
+
+### What Users Lose
+- ❌ Offline mode (wasn't working reliably anyway)
+- ❌ "Install to home screen" capability (not critical for dashboard use)
+- ❌ Custom app icon (can add back later if needed)
+
+### Technical Changes
+- Updated version to 0.4.0 across all files
+- Cleaned up frontend code (removed version detection logic)
+- Reverted to standard Express static file serving
+- App now behaves like a normal website - simple and predictable
+
+### Migration
+- Users should clear browser data one final time after deploying v0.4.0
+- No service worker will register anymore
+- DevTools → Application → Service Workers should show empty
+- DevTools → Application → Manifest should show "No manifest"
+
 ## [0.3.7] - 2026-02-03
 
 ### Fixed - CRITICAL
