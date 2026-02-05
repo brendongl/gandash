@@ -2511,12 +2511,17 @@ class Dash {
     }
     
     async loadCalendarData() {
+        const loadingEl = document.getElementById('calendar-loading');
+        if (loadingEl) loadingEl.classList.remove('hidden');
+        
         try {
             const events = await this.api('/calendar-events');
             this.calendarEvents = events;
             this.renderCalendar();
         } catch (error) {
             console.error('Failed to load calendar events:', error);
+        } finally {
+            if (loadingEl) loadingEl.classList.add('hidden');
         }
     }
     
