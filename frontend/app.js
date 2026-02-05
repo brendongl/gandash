@@ -2677,21 +2677,7 @@ class Dash {
                                      onclick="app.showEventModal('${day.dateStr}')">
                                     <div class="calendar-month-day-number">${day.date.getDate()}</div>
                                     <div class="calendar-month-day-events">
-                                        ${day.events.slice(0, 3).map(e => `
-                                            <div class="calendar-month-event" style="background: ${e.color}20; border-left: 3px solid ${e.color}" 
-                                                 onclick="event.stopPropagation(); app.editEvent(${e.id});">
-                                                <span>${this.escapeHtml(e.title)}</span>
-                                            </div>
-                                        `).join('')}
-                                        ${day.tasks.slice(0, 2).map(t => `
-                                            <div class="calendar-month-event calendar-month-task" 
-                                                 onclick="event.stopPropagation(); app.openDetailPanel(${t.id});">
-                                                <i class="fas fa-check-square"></i>
-                                                <span>${this.escapeHtml(t.title)}</span>
-                                            </div>
-                                        `).join('')}
-                                        ${day.events.length + day.tasks.length > 5 ? 
-                                            `<div class="calendar-month-more">+${day.events.length + day.tasks.length - 5} more</div>` : ''}
+                                        ${this.renderMonthDayContent(day.events, day.tasks)}
                                     </div>
                                 </div>
                             `).join('')}
@@ -2699,6 +2685,38 @@ class Dash {
                     `).join('')}
                 </div>
             </div>
+        `;
+    }
+    
+    // Render month day content - dots on mobile, text on desktop
+    renderMonthDayContent(events, tasks) {
+        const totalItems = events.length + tasks.length;
+        if (totalItems === 0) return '';
+        
+        // Generate dots for mobile view
+        const dots = [];
+        events.forEach(e => dots.push(`<span class="cal-dot" style="background: ${e.color || 'var(--accent)'}"></span>`));
+        tasks.forEach(t => {
+            const colors = { 1: 'var(--priority-1)', 2: 'var(--priority-2)', 3: 'var(--priority-3)', 4: 'var(--priority-4)' };
+            dots.push(`<span class="cal-dot cal-dot-task" style="background: ${colors[t.priority] || colors[4]}"></span>`);
+        });
+        
+        // Generate text items for desktop view
+        const textItems = [];
+        events.slice(0, 2).forEach(e => {
+            textItems.push(`<div class="cal-item cal-item-event" style="background: ${e.color}20; border-left: 3px solid ${e.color}" 
+                onclick="event.stopPropagation(); app.editEvent(${e.id});">${this.escapeHtml(e.title)}</div>`);
+        });
+        tasks.slice(0, 2).forEach(t => {
+            textItems.push(`<div class="cal-item cal-item-task" onclick="event.stopPropagation(); app.openDetailPanel(${t.id});">
+                <i class="fas fa-check-square"></i> ${this.escapeHtml(t.title)}</div>`);
+        });
+        
+        const moreCount = totalItems - 4;
+        
+        return `
+            <div class="cal-dots-mobile">${dots.slice(0, 4).join('')}${totalItems > 4 ? `<span class="cal-more-dot">+${totalItems - 4}</span>` : ''}</div>
+            <div class="cal-items-desktop">${textItems.join('')}${moreCount > 0 ? `<div class="cal-more">+${moreCount} more</div>` : ''}</div>
         `;
     }
     

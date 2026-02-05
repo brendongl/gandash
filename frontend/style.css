@@ -2731,6 +2731,73 @@ input[type="time"].small-input {
     font-weight: 600;
 }
 
+/* Calendar Month - Mobile Dots / Desktop Text */
+.cal-dots-mobile {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    justify-content: center;
+}
+
+.cal-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.cal-more-dot {
+    font-size: 8px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.cal-items-desktop {
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cal-item {
+    font-size: 10px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.cal-item-event {
+    color: var(--text-primary);
+}
+
+.cal-item-task {
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+}
+
+.cal-item-task i {
+    font-size: 8px;
+    margin-right: 2px;
+}
+
+.cal-more {
+    font-size: 9px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Desktop: show text, hide dots */
+@media (min-width: 769px) {
+    .cal-dots-mobile {
+        display: none;
+    }
+    .cal-items-desktop {
+        display: flex;
+    }
+}
+
 /* Event Modal Styles */
 #event-modal .form-group label {
     display: block;
