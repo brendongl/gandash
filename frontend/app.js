@@ -51,7 +51,8 @@ class Dash {
         };
         
         // Display mode (kanban or list)
-        this.displayMode = localStorage.getItem('gandash_display_mode') || 'kanban';
+        // displayMode is only 'kanban' when on kanban view, 'list' everywhere else
+        this.displayMode = 'list';
         
         // Pincode state
         this.enteredPin = '';
@@ -1270,21 +1271,28 @@ class Dash {
     setView(view) {
         this.currentView = view;
         
-        // Handle Kanban view specially
+        // Handle Kanban view specially - only kanban view shows kanban board
         const viewToggle = document.getElementById('view-toggle');
+        const kanbanContainer = document.getElementById('tasks-list');
+        const tableContainer = document.getElementById('tasks-table-container');
+        
         if (view === 'kanban') {
-            // Dedicated Kanban view - show all tasks in kanban mode
+            // Dedicated Kanban view - show kanban board
             this.displayMode = 'kanban';
             if (viewToggle) viewToggle.style.display = 'flex';
+            if (kanbanContainer) kanbanContainer.classList.remove('hidden');
+            if (tableContainer) tableContainer.classList.add('hidden');
             
             // Update toggle button states
             document.querySelectorAll('.view-toggle-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.displayMode === 'kanban');
             });
         } else {
-            // All other views: force list mode and hide toggle
+            // ALL other views: force list mode, hide kanban toggle
             this.displayMode = 'list';
             if (viewToggle) viewToggle.style.display = 'none';
+            if (kanbanContainer) kanbanContainer.classList.add('hidden');
+            if (tableContainer) tableContainer.classList.remove('hidden');
         }
         
         // Clear filters when switching views
@@ -2331,14 +2339,18 @@ class Dash {
         });
         console.log('Module event listeners bound');
         
-        // Calendar view toggle (week/month)
+        // Calendar view toggle (week/month) - with mobile touch support
         document.querySelectorAll('[data-calendar-view]').forEach(btn => {
-            btn.addEventListener('click', () => {
+            const handleCalendarViewToggle = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 this.calendarView = btn.dataset.calendarView;
                 document.querySelectorAll('[data-calendar-view]').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 this.renderCalendar();
-            });
+            };
+            btn.addEventListener('click', handleCalendarViewToggle);
+            btn.addEventListener('touchend', handleCalendarViewToggle, { passive: false });
         });
         
         // Calendar navigation
